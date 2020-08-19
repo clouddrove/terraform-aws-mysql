@@ -1,9 +1,3 @@
-locals {
-  db_subnet_group_name          = var.db_subnet_group_name != "" ? var.db_subnet_group_name : element(concat(aws_db_subnet_group.main.*.id, [""]), 0)
-  parameter_group_name_id = var.parameter_group_name != "" ? var.parameter_group_name : element(concat(aws_db_parameter_group.main.*.id, aws_db_parameter_group.main_no_prefix.*.id, [""]), 0)
-  option_group_name             = var.option_group_name != "" ? var.option_group_name : element(concat(aws_db_option_group.main.*.id, [""]), 0)
-}
-
 
 #Module      : label
 #Description : This terraform module is designed to generate consistent label names and
@@ -31,34 +25,6 @@ resource "aws_db_subnet_group" "main" {
     "Name" = format("%s%ssubnet", module.labels.id, var.delimiter)
   }
   )
-}
-
-resource "aws_db_parameter_group" "main_no_prefix" {
-  count = var.enabled ? 1 : 0
-
-  name        = format("%s%sparameter-no-prefix", module.labels.id, var.delimiter)
-  description = format("Database parameter group for%s%s",var.delimiter,module.labels.id)
-  family      = var.family
-
-  dynamic "parameter" {
-    for_each = var.parameters
-    content {
-      name         = parameter.value.name
-      value        = parameter.value.value
-      apply_method = lookup(parameter.value, "apply_method", null)
-    }
-  }
-
-  tags = merge(
-  module.labels.tags,
-  {
-    "Name" = format("%s%sparameter-no-prefix", module.labels.id, var.delimiter)
-  }
-  )
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_db_parameter_group" "main" {
@@ -159,9 +125,9 @@ resource "aws_db_instance" "this" {
   snapshot_identifier = var.snapshot_identifier
 
   vpc_security_group_ids = var.vpc_security_group_ids
-  db_subnet_group_name   = local.db_subnet_group_name
-  parameter_group_name   = local.parameter_group_name_id
-  option_group_name      = local.option_group_name
+  db_subnet_group_name   = join("", aws_db_subnet_group.main.*.id)
+  parameter_group_name   = join("", aws_db_parameter_group.main.*.id)
+  option_group_name      = join("",aws_db_option_group.main.*.id)
 
   availability_zone   = var.availability_zone
   multi_az            = var.multi_az
