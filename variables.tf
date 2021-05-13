@@ -19,13 +19,13 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
@@ -37,7 +37,7 @@ variable "delimiter" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -69,7 +69,7 @@ variable "storage_type" {
 
 variable "storage_encrypted" {
   type        = bool
-  default     = false
+  default     = true
   description = "Specifies whether the DB instance is encrypted"
 
 }
@@ -355,7 +355,7 @@ variable "enabled_cloudwatch_logs_exports" {
 }
 
 variable "timeouts" {
-  type        = map(string)
+  type = map(string)
   default = {
     create = "40m"
     update = "80m"
@@ -365,7 +365,7 @@ variable "timeouts" {
 }
 
 variable "option_group_timeouts" {
-  type        = map(string)
+  type = map(string)
   default = {
     delete = "15m"
   }
