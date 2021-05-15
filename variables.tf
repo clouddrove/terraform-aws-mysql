@@ -19,13 +19,13 @@ variable "environment" {
 }
 
 variable "label_order" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
 variable "attributes" {
-  type        = list
+  type        = list(any)
   default     = []
   description = "Additional attributes (e.g. `1`)."
 }
@@ -37,7 +37,7 @@ variable "delimiter" {
 }
 
 variable "tags" {
-  type        = map
+  type        = map(any)
   default     = {}
   description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
@@ -69,7 +69,7 @@ variable "storage_type" {
 
 variable "storage_encrypted" {
   type        = bool
-  default     = false
+  default     = true
   description = "Specifies whether the DB instance is encrypted"
 
 }
@@ -204,7 +204,7 @@ variable "publicly_accessible" {
 
 variable "monitoring_interval" {
   type        = number
-  default     = 0
+  default     = 1
   description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
 }
 
@@ -350,12 +350,12 @@ variable "character_set_name" {
 
 variable "enabled_cloudwatch_logs_exports" {
   type        = list(string)
-  default     = []
+  default     = ["general", "error", "slowquery"]
   description = "List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL)."
 }
 
 variable "timeouts" {
-  type        = map(string)
+  type = map(string)
   default = {
     create = "40m"
     update = "80m"
@@ -365,7 +365,7 @@ variable "timeouts" {
 }
 
 variable "option_group_timeouts" {
-  type        = map(string)
+  type = map(string)
   default = {
     delete = "15m"
   }

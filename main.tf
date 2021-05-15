@@ -16,22 +16,22 @@ module "labels" {
 resource "aws_db_subnet_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix = format("subnet%s%s",var.delimiter,module.labels.id)
-  description = format("Database subnet group for%s%s",var.delimiter,module.labels.id)
+  name_prefix = format("subnet%s%s", var.delimiter, module.labels.id)
+  description = format("Database subnet group for%s%s", var.delimiter, module.labels.id)
   subnet_ids  = var.subnet_ids
   tags = merge(
-  module.labels.tags,
-  {
-    "Name" = format("%s%ssubnet", module.labels.id, var.delimiter)
-  }
+    module.labels.tags,
+    {
+      "Name" = format("%s%ssubnet", module.labels.id, var.delimiter)
+    }
   )
 }
 
 resource "aws_db_parameter_group" "main" {
-  count = var.enabled  ? 1 : 0
+  count = var.enabled ? 1 : 0
 
-  name_prefix = format("%s%s",module.labels.id,var.delimiter)
-  description = format("Database parameter group for%s%s",var.delimiter,module.labels.id)
+  name_prefix = format("%s%s", module.labels.id, var.delimiter)
+  description = format("Database parameter group for%s%s", var.delimiter, module.labels.id)
   family      = var.family
 
   dynamic "parameter" {
@@ -44,10 +44,10 @@ resource "aws_db_parameter_group" "main" {
   }
 
   tags = merge(
-  module.labels.tags,
-  {
-    "Name" = format("%s%sparameter", module.labels.id, var.delimiter)
-  }
+    module.labels.tags,
+    {
+      "Name" = format("%s%sparameter", module.labels.id, var.delimiter)
+    }
   )
 
   lifecycle {
@@ -58,9 +58,9 @@ resource "aws_db_parameter_group" "main" {
 resource "aws_db_option_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix              = format("%s%s",module.labels.id,var.delimiter)
+  name_prefix              = format("%s%s", module.labels.id, var.delimiter)
   option_group_description = var.option_group_description == "" ? format("Option group for %s", module.labels.id) : var.option_group_description
-  engine_name              =  var.engine
+  engine_name              = var.engine
   major_engine_version     = var.major_engine_version
 
   dynamic "option" {
@@ -84,10 +84,10 @@ resource "aws_db_option_group" "main" {
 
 
   tags = merge(
-  module.labels.tags,
-  {
-    "Name" = format("%s%soption-group", module.labels.id, var.delimiter)
-  }
+    module.labels.tags,
+    {
+      "Name" = format("%s%soption-group", module.labels.id, var.delimiter)
+    }
   )
 
 
@@ -127,7 +127,7 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = var.vpc_security_group_ids
   db_subnet_group_name   = join("", aws_db_subnet_group.main.*.id)
   parameter_group_name   = join("", aws_db_parameter_group.main.*.id)
-  option_group_name      = join("",aws_db_option_group.main.*.id)
+  option_group_name      = join("", aws_db_option_group.main.*.id)
 
   availability_zone   = var.availability_zone
   multi_az            = var.multi_az
