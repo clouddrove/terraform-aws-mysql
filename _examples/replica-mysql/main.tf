@@ -150,7 +150,6 @@ module "replica" {
   engine_version    = "5.7.19"
   instance_class    = "db.t2.small"
   allocated_storage = 5
-  storage_encrypted = false
 
   # Username and password should not be set for replicas
   username                 = ""

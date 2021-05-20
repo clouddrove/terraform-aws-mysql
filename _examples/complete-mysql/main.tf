@@ -54,7 +54,6 @@ module "mysql" {
   engine_version    = "5.7.19"
   instance_class    = "db.t2.small"
   allocated_storage = 5
-  storage_encrypted = false
 
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
 
