@@ -110,7 +110,7 @@ resource "aws_db_instance" "this" {
   instance_class    = var.instance_class
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
-  storage_encrypted = var.storage_encrypted
+  storage_encrypted = true
   kms_key_id        = var.kms_key_id
   license_model     = var.license_model
 
