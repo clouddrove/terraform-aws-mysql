@@ -184,11 +184,6 @@ variable "availability_zone" {
   description = "The Availability Zone of the RDS instance"
 }
 
-variable "multi_az" {
-  type        = bool
-  default     = false
-  description = "Specifies if the RDS instance is multi-AZ"
-}
 
 variable "iops" {
   type        = number
