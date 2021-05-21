@@ -402,3 +402,9 @@ variable "delete_automated_backups" {
   default     = true
   description = "Specifies whether to remove automated backups immediately after the DB instance is deleted"
 }
+
+variable "multi_az" {
+  type        = bool
+  default     = false
+  description = "Specifies if the RDS instance is multi-AZ"
+}

@@ -67,6 +67,7 @@ module "mysql" {
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
+  multi_az           = false
 
 
   # disable backups to create DB faster
