@@ -130,7 +130,6 @@ resource "aws_db_instance" "this" {
   option_group_name      = join("", aws_db_option_group.main.*.id)
 
   availability_zone   = var.availability_zone
-  multi_az            = true
   iops                = var.iops
   publicly_accessible = var.publicly_accessible
   monitoring_interval = var.monitoring_interval
