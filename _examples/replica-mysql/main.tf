@@ -60,9 +60,9 @@ data "aws_security_group" "default" {
 module "master" {
   source = "../../"
 
-  name          = "sg"
-  application   = "clouddrove"
-  environment   = "test"
+  name        = "sg"
+  application = "clouddrove"
+  environment = "test"
   label_order = ["environment", "application", "name"]
 
   engine            = "mysql"
@@ -74,16 +74,16 @@ module "master" {
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
 
   # DB Details
-  database_name = "test"
-  username = "user"
-  password = "esfsgcGdfawAhdxtfjm!"
-  port     = "3306"
+  database_name          = "test"
+  username               = "user"
+  password               = "esfsgcGdfawAhdxtfjm!"
+  port                   = "3306"
   vpc_security_group_ids = [module.security_group.security_group_ids]
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
+  multi_az           = false
 
-  multi_az = true
 
   # disable backups to create DB faster
   backup_retention_period = 0
@@ -91,7 +91,7 @@ module "master" {
   enabled_cloudwatch_logs_exports = ["audit", "general"]
 
   # DB subnet group
-  subnet_ids = module.subnets.public_subnet_id
+  subnet_ids          = module.subnets.public_subnet_id
   publicly_accessible = true
 
   # DB parameter group
@@ -151,20 +151,17 @@ module "replica" {
   engine_version    = "5.7.19"
   instance_class    = "db.t2.small"
   allocated_storage = 5
-  storage_encrypted = false
 
   # Username and password should not be set for replicas
-  username = ""
-  password = ""
-  port     = 3306
+  username                 = ""
+  password                 = ""
+  port                     = 3306
   delete_automated_backups = ""
 
   vpc_security_group_ids = [data.aws_security_group.default.id]
 
   maintenance_window = "Tue:00:00-Tue:03:00"
   backup_window      = "03:00-06:00"
-
-  multi_az = false
 
   # disable backups to create DB faster
   backup_retention_period = 0

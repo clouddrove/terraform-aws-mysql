@@ -67,12 +67,6 @@ variable "storage_type" {
   description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'."
 }
 
-variable "storage_encrypted" {
-  type        = bool
-  default     = true
-  description = "Specifies whether the DB instance is encrypted"
-
-}
 
 variable "kms_key_id" {
   description = "The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage_encrypted is set to true and kms_key_id is not specified the default KMS key created in your account will be used"
@@ -184,11 +178,6 @@ variable "availability_zone" {
   description = "The Availability Zone of the RDS instance"
 }
 
-variable "multi_az" {
-  type        = bool
-  default     = false
-  description = "Specifies if the RDS instance is multi-AZ"
-}
 
 variable "iops" {
   type        = number
@@ -412,4 +401,10 @@ variable "delete_automated_backups" {
   type        = bool
   default     = true
   description = "Specifies whether to remove automated backups immediately after the DB instance is deleted"
+}
+
+variable "multi_az" {
+  type        = bool
+  default     = false
+  description = "Specifies if the RDS instance is multi-AZ"
 }
