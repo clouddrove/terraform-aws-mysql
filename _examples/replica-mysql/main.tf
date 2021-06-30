@@ -19,7 +19,7 @@ module "subnets" {
 
   name        = "subnets"
   environment = "test"
-  label_order = ["environment",` "name"]
+  label_order = ["environment", "name"]
 
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -30,8 +30,8 @@ module "subnets" {
 }
 
 module "security_group" {
-  source      = "clouddrove/security-group/aws"
-  version     = "0.15.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name          = "security-group"
   environment   = "test"

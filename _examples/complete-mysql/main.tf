@@ -30,8 +30,8 @@ module "subnets" {
 }
 
 module "security_group" {
-  source      = "clouddrove/security-group/aws"
-  version     = "0.15.0"
+  source  = "clouddrove/security-group/aws"
+  version = "0.15.0"
 
   name          = "security-group"
   environment   = "test"

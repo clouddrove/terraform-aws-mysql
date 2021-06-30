@@ -4,8 +4,8 @@
 #              tags for resources. You can use terraform-labels to implement a strict
 #              naming convention.
 module "labels" {
-  source      = "clouddrove/labels/aws"
-  version     = "0.15.0"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
 
   name        = var.name
   repository  = var.repository

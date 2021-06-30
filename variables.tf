@@ -57,8 +57,9 @@ variable "managedby" {
 
 
 variable "allocated_storage" {
-  description = "The allocated storage in gigabytes"
   type        = string
+  default = ""
+  description = "The allocated storage in gigabytes"
 }
 
 variable "storage_type" {
@@ -101,6 +102,7 @@ variable "iam_database_authentication_enabled" {
 
 variable "engine" {
   type        = string
+  default     = ""
   description = "The database engine to use"
 }
 
