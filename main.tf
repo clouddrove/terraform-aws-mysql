@@ -47,7 +47,7 @@ resource "aws_db_parameter_group" "main" {
   tags = merge(
     module.labels.tags,
     {
-      "Name" = format("subnet%s%sparameter", module.labels.id, var.delimiter)
+      "Name" = format("%s%sparameter", module.labels.id, var.delimiter)
     }
   )
 
@@ -59,7 +59,7 @@ resource "aws_db_parameter_group" "main" {
 resource "aws_db_option_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix              = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix              = format("subnet%s%s", module.labels.id, var.delimiter)
   option_group_description = var.option_group_description == "" ? format("Option group for %s", module.labels.id) : var.option_group_description
   engine_name              = var.engine
   major_engine_version     = var.major_engine_version
