@@ -31,7 +31,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_parameter_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix = format("subnet%s%s", module.labels.id, var.delimiter)
   description = format("Database parameter group for%s%s", var.delimiter, module.labels.id)
   family      = var.family
 
@@ -47,7 +47,7 @@ resource "aws_db_parameter_group" "main" {
   tags = merge(
     module.labels.tags,
     {
-      "Name" = format("%s%sparameter", module.labels.id, var.delimiter)
+      "Name" = format("subnet%s%sparameter", module.labels.id, var.delimiter)
     }
   )
 
