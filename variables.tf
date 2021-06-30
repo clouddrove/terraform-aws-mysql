@@ -58,7 +58,7 @@ variable "managedby" {
 
 variable "allocated_storage" {
   type        = string
-  default     = ""
+  default     = ["20"]
   description = "The allocated storage in gigabytes"
 }
 
@@ -146,7 +146,7 @@ variable "password" {
 
 variable "port" {
   type        = string
-  default     = ""
+  default     = ["3306"]
   description = "The port on which the DB accepts connections"
 }
 
