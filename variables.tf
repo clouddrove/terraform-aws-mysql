@@ -114,7 +114,7 @@ variable "engine_version" {
 
 variable "final_snapshot_identifier" {
   type        = string
-  default     = null
+  default     = false
   description = "The name of your final DB snapshot when this DB instance is deleted."
 }
 
