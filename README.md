@@ -14,7 +14,7 @@
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.12-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v0.15-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
   <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
@@ -51,7 +51,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 
 This module has a few dependencies: 
 
-- [Terraform 0.12](https://learn.hashicorp.com/terraform/getting-started/install.html)
+- [Terraform 1.x.x](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - [Go](https://golang.org/doc/install)
 - [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
 - [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
@@ -73,12 +73,12 @@ Here are some examples of how you can use this module in your inventory structur
 ###  MySQL
 ```hcl
   module "mysql" {
-    source = "../../"
+  source                      = "clouddrove/mysql/aws"
+  version                     = "0.15.0"
 
     name          = "sg"
-    application   = "clouddrove"
     environment   = "test"
-    label_order = ["environment", "application", "name"]
+    label_order = ["environment", "name"]
 
     engine            = "mysql"
     engine_version    = "5.7.19"
@@ -160,75 +160,75 @@ Here are some examples of how you can use this module in your inventory structur
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| allocated_storage | The allocated storage in gigabytes | string | - | yes |
-| allow_major_version_upgrade | Indicates that major version upgrades are allowed. Changing this parameter does not result in an outage and the change is asynchronously applied as soon as possible | bool | `false` | no |
-| application | Application (e.g. `cd` or `clouddrove`). | string | `` | no |
-| apply_immediately | Specifies whether any database modifications are applied immediately, or during the next maintenance window | bool | `false` | no |
-| attributes | Additional attributes (e.g. `1`). | list | `<list>` | no |
-| auto_minor_version_upgrade | Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window | bool | `true` | no |
-| availability_zone | The Availability Zone of the RDS instance | string | `` | no |
-| backup_retention_period | The days to retain backups for | number | `1` | no |
-| backup_window | The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance_window | string | - | yes |
-| ca_cert_identifier | Specifies the identifier of the CA certificate for the DB instance | string | `rds-ca-2019` | no |
-| character_set_name | (Optional) The character set name to use for DB encoding in Oracle instances. This can't be changed. See Oracle Character Sets Supported in Amazon RDS for more information | string | `` | no |
-| copy_tags_to_snapshot | On delete, copy all Instance tags to the final snapshot (if final_snapshot_identifier is specified) | bool | `false` | no |
-| create_db_instance | Whether to create a database instance | bool | `true` | no |
-| create_db_option_group | (Optional) Create a database option group | bool | `true` | no |
-| create_db_parameter_group | Whether to create a database parameter group | bool | `true` | no |
-| create_db_subnet_group | Whether to create a database subnet group | bool | `true` | no |
-| create_monitoring_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | bool | `false` | no |
-| database_name | database name for the master DB | string | - | yes |
-| db_subnet_group_name | Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC | string | `` | no |
-| delete_automated_backups | Specifies whether to remove automated backups immediately after the DB instance is deleted | bool | `true` | no |
-| deletion_protection | The database can't be deleted when this value is set to true. | bool | `false` | no |
-| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | string | `-` | no |
-| enabled | Whether to create this resource or not? | bool | `true` | no |
-| enabled_cloudwatch_logs_exports | List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL). | list(string) | `<list>` | no |
-| engine | The database engine to use | string | - | yes |
-| engine_version | The engine version to use | string | - | yes |
-| environment | Environment (e.g. `prod`, `dev`, `staging`). | string | `` | no |
-| family | The family of the DB parameter group | string | `` | no |
-| final_snapshot_identifier | The name of your final DB snapshot when this DB instance is deleted. | string | `` | no |
-| iam_database_authentication_enabled | Specifies whether or mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled | bool | `false` | no |
-| instance_class | The instance type of the RDS instance | string | - | yes |
-| iops | The amount of provisioned IOPS. Setting this implies a storage_type of 'io1' | number | `0` | no |
-| kms_key_id | The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage_encrypted is set to true and kms_key_id is not specified the default KMS key created in your account will be used | string | `` | no |
-| label_order | Label order, e.g. `name`,`application`. | list | `<list>` | no |
-| license_model | License model information for this DB instance. Optional, but required for some DB engines, i.e. Oracle SE1 | string | `` | no |
-| maintenance_window | The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00' | string | - | yes |
-| major_engine_version | Specifies the major version of the engine that this option group should be associated with | string | `` | no |
-| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | string | `anmol@clouddrove.com` | no |
-| max_allocated_storage | Specifies the value for Storage Autoscaling | number | `0` | no |
-| monitoring_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | number | `0` | no |
-| monitoring_role_arn | The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring_interval is non-zero. | string | `` | no |
-| monitoring_role_name | Name of the IAM role which will be created when create_monitoring_role is enabled. | string | `rds-monitoring-role` | no |
-| multi_az | Specifies if the RDS instance is multi-AZ | bool | `false` | no |
-| name | Name  (e.g. `app` or `cluster`). | string | `` | no |
-| option_group_description | The description of the option group | string | `` | no |
-| option_group_name | Name of the DB option group to associate | string | `` | no |
-| option_group_timeouts | Define maximum timeout for deletion of `aws_db_option_group` resource | map(string) | `<map>` | no |
-| options | A list of Options to apply. | any | `<list>` | no |
-| parameter_group_description | Description of the DB parameter group to create | string | `` | no |
-| parameter_group_name | Name of the DB parameter group to associate or create | string | `` | no |
-| parameters | A list of DB parameters (map) to apply | list(map(string)) | `<list>` | no |
-| password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | string | - | yes |
-| performance_insights_enabled | Specifies whether Performance Insights are enabled | bool | `false` | no |
-| performance_insights_retention_period | The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). | number | `7` | no |
-| port | The port on which the DB accepts connections | string | - | yes |
-| publicly_accessible | Bool to control if instance is publicly accessible | bool | `false` | no |
-| replicate_source_db | Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate. | string | `` | no |
-| skip_final_snapshot | Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from final_snapshot_identifier | bool | `true` | no |
-| snapshot_identifier | Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05. | string | `` | no |
-| storage_encrypted | Specifies whether the DB instance is encrypted | bool | `false` | no |
-| storage_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'. | string | `gp2` | no |
-| subnet_ids | A list of VPC subnet IDs | list(string) | `<list>` | no |
-| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | map | `<map>` | no |
-| timeouts | (Optional) Updated Terraform resource management timeouts. Applies to `aws_db_instance` in particular to permit resource management times | map(string) | `<map>` | no |
-| timezone | (Optional) Time zone of the DB instance. timezone is currently only supported by Microsoft SQL Server. The timezone can only be set on creation. See MSSQL User Guide for more information. | string | `` | no |
-| use_parameter_group_name_prefix | Whether to use the parameter group name prefix or not | bool | `true` | no |
-| username | Username for the master DB user | string | - | yes |
-| vpc_security_group_ids | List of VPC security groups to associate | list(string) | `<list>` | no |
+|------|-------------|------|---------|:--------:|
+| allocated\_storage | The allocated storage in gigabytes | `string` | `"20"` | no |
+| allow\_major\_version\_upgrade | Indicates that major version upgrades are allowed. Changing this parameter does not result in an outage and the change is asynchronously applied as soon as possible | `bool` | `false` | no |
+| application | Application (e.g. `cd` or `clouddrove`). | `string` | `""` | no |
+| apply\_immediately | Specifies whether any database modifications are applied immediately, or during the next maintenance window | `bool` | `false` | no |
+| attributes | Additional attributes (e.g. `1`). | `list(any)` | `[]` | no |
+| auto\_minor\_version\_upgrade | Indicates that minor engine upgrades will be applied automatically to the DB instance during the maintenance window | `bool` | `true` | no |
+| availability\_zone | The Availability Zone of the RDS instance | `string` | `""` | no |
+| backup\_retention\_period | The days to retain backups for | `number` | `1` | no |
+| backup\_window | The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance\_window | `string` | `""` | no |
+| ca\_cert\_identifier | Specifies the identifier of the CA certificate for the DB instance | `string` | `"rds-ca-2019"` | no |
+| character\_set\_name | (Optional) The character set name to use for DB encoding in Oracle instances. This can't be changed. See Oracle Character Sets Supported in Amazon RDS for more information | `string` | `""` | no |
+| copy\_tags\_to\_snapshot | On delete, copy all Instance tags to the final snapshot (if final\_snapshot\_identifier is specified) | `bool` | `false` | no |
+| create\_db\_instance | Whether to create a database instance | `bool` | `true` | no |
+| create\_db\_option\_group | (Optional) Create a database option group | `bool` | `true` | no |
+| create\_db\_parameter\_group | Whether to create a database parameter group | `bool` | `true` | no |
+| create\_db\_subnet\_group | Whether to create a database subnet group | `bool` | `true` | no |
+| create\_monitoring\_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | `bool` | `false` | no |
+| database\_name | database name for the master DB | `string` | `"test"` | no |
+| db\_subnet\_group\_name | Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC | `string` | `""` | no |
+| delete\_automated\_backups | Specifies whether to remove automated backups immediately after the DB instance is deleted | `bool` | `true` | no |
+| deletion\_protection | The database can't be deleted when this value is set to true. | `bool` | `false` | no |
+| delimiter | Delimiter to be used between `organization`, `environment`, `name` and `attributes`. | `string` | `"-"` | no |
+| enabled | Whether to create this resource or not? | `bool` | `true` | no |
+| enabled\_cloudwatch\_logs\_exports | List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL). | `list(string)` | <pre>[<br>  "general",<br>  "error",<br>  "slowquery"<br>]</pre> | no |
+| engine | The database engine to use | `string` | `""` | no |
+| engine\_version | The engine version to use | `string` | `""` | no |
+| environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `"test"` | no |
+| family | The family of the DB parameter group | `string` | `""` | no |
+| final\_snapshot\_identifier | The name of your final DB snapshot when this DB instance is deleted. | `string` | `false` | no |
+| iam\_database\_authentication\_enabled | Specifies whether or mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled | `bool` | `false` | no |
+| instance\_class | The instance type of the RDS instance | `string` | `""` | no |
+| iops | The amount of provisioned IOPS. Setting this implies a storage\_type of 'io1' | `number` | `0` | no |
+| kms\_key\_id | The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage\_encrypted is set to true and kms\_key\_id is not specified the default KMS key created in your account will be used | `string` | `""` | no |
+| label\_order | Label order, e.g. `name`,`application`. | `list(any)` | `[]` | no |
+| license\_model | License model information for this DB instance. Optional, but required for some DB engines, i.e. Oracle SE1 | `string` | `""` | no |
+| maintenance\_window | The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00' | `string` | `""` | no |
+| major\_engine\_version | Specifies the major version of the engine that this option group should be associated with | `string` | `""` | no |
+| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"anmol@clouddrove.com"` | no |
+| max\_allocated\_storage | Specifies the value for Storage Autoscaling | `number` | `0` | no |
+| monitoring\_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | `number` | `1` | no |
+| monitoring\_role\_arn | The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring\_interval is non-zero. | `string` | `""` | no |
+| monitoring\_role\_name | Name of the IAM role which will be created when create\_monitoring\_role is enabled. | `string` | `"rds-monitoring-role"` | no |
+| multi\_az | Specifies if the RDS instance is multi-AZ | `bool` | `false` | no |
+| name | Name  (e.g. `app` or `cluster`). | `string` | `"clouddrove"` | no |
+| option\_group\_description | The description of the option group | `string` | `""` | no |
+| option\_group\_name | Name of the DB option group to associate | `string` | `""` | no |
+| option\_group\_timeouts | Define maximum timeout for deletion of `aws_db_option_group` resource | `map(string)` | <pre>{<br>  "delete": "15m"<br>}</pre> | no |
+| options | A list of Options to apply. | `any` | `[]` | no |
+| parameter\_group\_description | Description of the DB parameter group to create | `string` | `""` | no |
+| parameter\_group\_name | Name of the DB parameter group to associate or create | `string` | `""` | no |
+| parameters | A list of DB parameters (map) to apply | `list(map(string))` | `[]` | no |
+| password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | `string` | `""` | no |
+| performance\_insights\_enabled | Specifies whether Performance Insights are enabled | `bool` | `false` | no |
+| performance\_insights\_retention\_period | The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). | `number` | `7` | no |
+| port | The port on which the DB accepts connections | `string` | `"3306"` | no |
+| publicly\_accessible | Bool to control if instance is publicly accessible | `bool` | `false` | no |
+| replicate\_source\_db | Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate. | `string` | `""` | no |
+| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-mysql"` | no |
+| skip\_final\_snapshot | Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from final\_snapshot\_identifier | `bool` | `true` | no |
+| snapshot\_identifier | Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05. | `string` | `""` | no |
+| storage\_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'. | `string` | `"gp2"` | no |
+| subnet\_ids | A list of VPC subnet IDs | `list(string)` | `[]` | no |
+| tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
+| timeouts | (Optional) Updated Terraform resource management timeouts. Applies to `aws_db_instance` in particular to permit resource management times | `map(string)` | <pre>{<br>  "create": "40m",<br>  "delete": "40m",<br>  "update": "80m"<br>}</pre> | no |
+| timezone | (Optional) Time zone of the DB instance. timezone is currently only supported by Microsoft SQL Server. The timezone can only be set on creation. See MSSQL User Guide for more information. | `string` | `""` | no |
+| use\_parameter\_group\_name\_prefix | Whether to use the parameter group name prefix or not | `bool` | `true` | no |
+| username | Username for the master DB user | `string` | `""` | no |
+| vpc\_security\_group\_ids | List of VPC security groups to associate | `list(string)` | `[]` | no |
 
 ## Outputs
 
