@@ -2,7 +2,7 @@
 #Description : Terraform label module variables
 variable "name" {
   type        = string
-  default     = ""
+  default     = "clouddrove"
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
@@ -14,7 +14,7 @@ variable "application" {
 
 variable "environment" {
   type        = string
-  default     = ""
+  default     = "test"
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
@@ -127,7 +127,7 @@ variable "instance_class" {
 
 variable "database_name" {
   type        = string
-  default     = ""
+  default     = "test"
   description = "database name for the master DB"
 
 }
