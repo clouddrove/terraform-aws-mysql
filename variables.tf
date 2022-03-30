@@ -2,7 +2,7 @@
 #Description : Terraform label module variables
 variable "name" {
   type        = string
-  default     = ""
+  default     = "clouddrove"
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
@@ -14,7 +14,7 @@ variable "application" {
 
 variable "environment" {
   type        = string
-  default     = ""
+  default     = "test"
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
@@ -57,8 +57,9 @@ variable "managedby" {
 
 
 variable "allocated_storage" {
-  description = "The allocated storage in gigabytes"
   type        = string
+  default     = "20"
+  description = "The allocated storage in gigabytes"
 }
 
 variable "storage_type" {
@@ -101,44 +102,51 @@ variable "iam_database_authentication_enabled" {
 
 variable "engine" {
   type        = string
+  default     = ""
   description = "The database engine to use"
 }
 
 variable "engine_version" {
-  description = "The engine version to use"
   type        = string
+  default     = ""
+  description = "The engine version to use"
 }
 
 variable "final_snapshot_identifier" {
   type        = string
-  default     = null
+  default     = false
   description = "The name of your final DB snapshot when this DB instance is deleted."
 }
 
 variable "instance_class" {
   type        = string
+  default     = ""
   description = "The instance type of the RDS instance"
 
 }
 
 variable "database_name" {
   type        = string
+  default     = "test"
   description = "database name for the master DB"
 
 }
 
 variable "username" {
   type        = string
+  default     = ""
   description = "Username for the master DB user"
 }
 
 variable "password" {
   type        = string
+  default     = ""
   description = "Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file"
 }
 
 variable "port" {
   type        = string
+  default     = "3306"
   description = "The port on which the DB accepts connections"
 }
 
@@ -236,6 +244,7 @@ variable "apply_immediately" {
 
 variable "maintenance_window" {
   type        = string
+  default     = ""
   description = "The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00'"
 }
 
@@ -259,6 +268,7 @@ variable "backup_retention_period" {
 
 variable "backup_window" {
   type        = string
+  default     = ""
   description = "The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance_window"
 }
 
@@ -407,4 +417,16 @@ variable "multi_az" {
   type        = bool
   default     = false
   description = "Specifies if the RDS instance is multi-AZ"
+}
+
+variable "repository" {
+  type        = string
+  default     = "https://github.com/clouddrove/terraform-aws-mysql"
+  description = "Terraform current module repo"
+
+  validation {
+    # regex(...) fails if it cannot find a match
+    condition     = can(regex("^https://", var.repository))
+    error_message = "The module-repo value must be a valid Git repo link."
+  }
 }

@@ -4,10 +4,11 @@
 #              tags for resources. You can use terraform-labels to implement a strict
 #              naming convention.
 module "labels" {
-  source = "git::https://github.com/clouddrove/terraform-labels.git?ref=tags/0.12.1"
+  source  = "clouddrove/labels/aws"
+  version = "0.15.0"
 
   name        = var.name
-  application = var.application
+  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   label_order = var.label_order
@@ -30,7 +31,7 @@ resource "aws_db_subnet_group" "main" {
 resource "aws_db_parameter_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix = format("subnet%s%s", module.labels.id, var.delimiter)
   description = format("Database parameter group for%s%s", var.delimiter, module.labels.id)
   family      = var.family
 
@@ -58,7 +59,7 @@ resource "aws_db_parameter_group" "main" {
 resource "aws_db_option_group" "main" {
   count = var.enabled ? 1 : 0
 
-  name_prefix              = format("%s%s", module.labels.id, var.delimiter)
+  name_prefix              = format("subnet%s%s", module.labels.id, var.delimiter)
   option_group_description = var.option_group_description == "" ? format("Option group for %s", module.labels.id) : var.option_group_description
   engine_name              = var.engine
   major_engine_version     = var.major_engine_version
@@ -120,8 +121,6 @@ resource "aws_db_instance" "this" {
   port                                = var.port
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
 
-  replicate_source_db = var.replicate_source_db
-
   snapshot_identifier = var.snapshot_identifier
 
   vpc_security_group_ids = var.vpc_security_group_ids
@@ -168,4 +167,3 @@ resource "aws_db_instance" "this" {
     update = lookup(var.timeouts, "update", null)
   }
 }
-

@@ -16,7 +16,7 @@ github_repo: clouddrove/terraform-aws-mysql
 # Badges to display
 badges:
   - name: "Terraform"
-    image: "https://img.shields.io/badge/Terraform-v0.12-green"
+    image: "https://img.shields.io/badge/Terraform-v0.15-green"
     url: "https://www.terraform.io"
   - name: "Licence"
     image: "https://img.shields.io/badge/License-MIT-blue.svg"
@@ -37,12 +37,12 @@ usage : |-
   ###  MySQL
   ```hcl
     module "mysql" {
-      source = "../../"
+    source                      = "clouddrove/mysql/aws"
+    version                     = "0.15.0"
 
       name          = "sg"
-      application   = "clouddrove"
       environment   = "test"
-      label_order = ["environment", "application", "name"]
+      label_order = ["environment", "name"]
 
       engine            = "mysql"
       engine_version    = "5.7.19"
