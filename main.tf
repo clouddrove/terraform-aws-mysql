@@ -29,7 +29,7 @@ resource "aws_db_subnet_group" "main" {
 }
 
 resource "aws_db_parameter_group" "main" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.engine == "mysql" ? 1 : 0
 
   name_prefix = format("subnet%s%s", module.labels.id, var.delimiter)
   description = format("Database parameter group for%s%s", var.delimiter, module.labels.id)
@@ -113,7 +113,7 @@ resource "aws_db_instance" "this" {
   storage_type      = var.storage_type
   storage_encrypted = true
   kms_key_id        = var.kms_key_id
-  license_model     = var.license_model
+  license_model     = var.engine != "mysql" ? "bring-your-own-license" : null
 
   name                                = var.database_name
   username                            = var.username
@@ -125,8 +125,8 @@ resource "aws_db_instance" "this" {
 
   vpc_security_group_ids = var.vpc_security_group_ids
   db_subnet_group_name   = join("", aws_db_subnet_group.main.*.id)
-  parameter_group_name   = join("", aws_db_parameter_group.main.*.id)
-  option_group_name      = join("", aws_db_option_group.main.*.id)
+  parameter_group_name   = var.engine == "mysql" ? join("", aws_db_parameter_group.main.*.id) : var.parameter_group_name
+  option_group_name      = var.engine == "mysql" ? join("", aws_db_option_group.main.*.id) : var.option_group_name
 
   availability_zone   = var.availability_zone
   multi_az            = var.multi_az
