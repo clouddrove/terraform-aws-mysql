@@ -200,7 +200,7 @@ Here are some examples of how you can use this module in your inventory structur
 | major\_engine\_version | Specifies the major version of the engine that this option group should be associated with | `string` | `""` | no |
 | managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"anmol@clouddrove.com"` | no |
 | max\_allocated\_storage | Specifies the value for Storage Autoscaling | `number` | `0` | no |
-| monitoring\_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | `number` | `1` | no |
+| monitoring\_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | `number` | `0` | no |
 | monitoring\_role\_arn | The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring\_interval is non-zero. | `string` | `""` | no |
 | monitoring\_role\_name | Name of the IAM role which will be created when create\_monitoring\_role is enabled. | `string` | `"rds-monitoring-role"` | no |
 | multi\_az | Specifies if the RDS instance is multi-AZ | `bool` | `false` | no |
@@ -208,7 +208,7 @@ Here are some examples of how you can use this module in your inventory structur
 | option\_group\_description | The description of the option group | `string` | `""` | no |
 | option\_group\_name | Name of the DB option group to associate | `string` | `""` | no |
 | option\_group\_timeouts | Define maximum timeout for deletion of `aws_db_option_group` resource | `map(string)` | <pre>{<br>  "delete": "15m"<br>}</pre> | no |
-| options | A list of Options to apply. | `any` | `[]` | no |
+| options | A list of Options to apply. | `list(any)` | `[]` | no |
 | parameter\_group\_description | Description of the DB parameter group to create | `string` | `""` | no |
 | parameter\_group\_name | Name of the DB parameter group to associate or create | `string` | `""` | no |
 | parameters | A list of DB parameters (map) to apply | `list(map(string))` | `[]` | no |
