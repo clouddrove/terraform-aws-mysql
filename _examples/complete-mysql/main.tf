@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "ap-south-1"
 }
 
 module "vpc" {
@@ -21,7 +21,7 @@ module "subnets" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
   vpc_id             = module.vpc.vpc_id
   type               = "public"
   igw_id             = module.vpc.igw_id

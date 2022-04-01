@@ -46,7 +46,7 @@ module "security_group" {
   allowed_ports = [3306]
 }
 
-module "mysql" {
+module "oracle" {
   source = "../../"
 
   name        = "sg"
