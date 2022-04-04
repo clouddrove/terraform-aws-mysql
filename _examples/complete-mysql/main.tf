@@ -15,13 +15,13 @@ module "vpc" {
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "0.15.3"
 
   name        = "subnets"
   environment = "test"
   label_order = ["environment", "name"]
 
-  availability_zones = ["ap-south-1a", "ap-south-1b", "ap-south-1c"]
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public"
   igw_id             = module.vpc.igw_id
@@ -90,7 +90,6 @@ module "mysql" {
 
   # Database Deletion Protection
   deletion_protection = false
-
 
   parameters = [
     {
