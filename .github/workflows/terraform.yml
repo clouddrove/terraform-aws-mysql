@@ -31,9 +31,9 @@ jobs:
           - ${{ needs.versionExtract.outputs.minVersion }}
           - ${{ needs.versionExtract.outputs.maxVersion }}
         directory:
-          - _examples/complete-mysql
-          - _examples/oracle_db
-          - _examples/replica-mysql
+          - _example/complete-mysql
+          - _example/oracle_db
+          - _example/replica-mysql
 
     steps:
       - name: Checkout
