@@ -167,7 +167,9 @@ resource "aws_db_option_group" "db_option_group" {
   }
 }
 
-
+#tfsec:ignore:aws-rds-no-public-db-access
+#tfsec:ignore:aws-rds-no-public-db-access
+#tfsec:ignore:aws-rds-encrypt-instance-storage-data
 resource "aws_db_instance" "this" {
   count = var.enabled ? 1 : 0
 
