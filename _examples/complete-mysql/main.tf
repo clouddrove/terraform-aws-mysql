@@ -52,7 +52,7 @@ module "mysql" {
   label_order = ["environment", "name"]
 
   engine            = "mysql"
-  engine_version    = "5.7.19"
+  engine_version    = "5.7.21"
   instance_class    = "db.t2.small"
   allocated_storage = 5
 
