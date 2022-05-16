@@ -14,10 +14,16 @@
 <p align="center">
 
 <a href="https://www.terraform.io">
-  <img src="https://img.shields.io/badge/Terraform-v0.15-green" alt="Terraform">
+  <img src="https://img.shields.io/badge/Terraform-v1.1.7-green" alt="Terraform">
 </a>
 <a href="LICENSE.md">
-  <img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="Licence">
+  <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
+</a>
+<a href="https://github.com/clouddrove/terraform-aws-mysql/actions/workflows/tfsec.yml">
+  <img src="https://github.com/clouddrove/terraform-aws-mysql/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
+</a>
+<a href="https://github.com/clouddrove/terraform-aws-mysql/actions/workflows/terraform.yml">
+  <img src="https://github.com/clouddrove/terraform-aws-mysql/actions/workflows/terraform.yml/badge.svg" alt="static-checks">
 </a>
 
 
@@ -74,7 +80,7 @@ Here are some examples of how you can use this module in your inventory structur
 ```hcl
   module "mysql" {
   source                      = "clouddrove/mysql/aws"
-  version                     = "0.15.0"
+  version                     = "1.0.1"
 
     name          = "sg"
     environment   = "test"
@@ -188,6 +194,9 @@ Here are some examples of how you can use this module in your inventory structur
 | engine | The database engine to use | `string` | `""` | no |
 | engine\_version | The engine version to use | `string` | `""` | no |
 | environment | Environment (e.g. `prod`, `dev`, `staging`). | `string` | `"test"` | no |
+| existing\_option\_group\_name | The existing option group to use for this instance. (OPTIONAL) | `string` | `""` | no |
+| existing\_parameter\_group\_name | The existing parameter group to use for this instance. (OPTIONAL) | `string` | `""` | no |
+| existing\_subnet\_group | The existing DB subnet group to use for this instance (OPTIONAL) | `string` | `""` | no |
 | family | The family of the DB parameter group | `string` | `""` | no |
 | final\_snapshot\_identifier | The name of your final DB snapshot when this DB instance is deleted. | `string` | `false` | no |
 | iam\_database\_authentication\_enabled | Specifies whether or mappings of AWS Identity and Access Management (IAM) accounts to database accounts is enabled | `bool` | `false` | no |
@@ -214,13 +223,17 @@ Here are some examples of how you can use this module in your inventory structur
 | parameters | A list of DB parameters (map) to apply | `list(map(string))` | `[]` | no |
 | password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | `string` | `""` | no |
 | performance\_insights\_enabled | Specifies whether Performance Insights are enabled | `bool` | `false` | no |
-| performance\_insights\_retention\_period | The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). | `number` | `7` | no |
+| performance\_insights\_retention\_period | The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). | `number` | `0` | no |
 | port | The port on which the DB accepts connections | `string` | `"3306"` | no |
 | publicly\_accessible | Bool to control if instance is publicly accessible | `bool` | `false` | no |
+| read\_replica | Specifies whether this RDS instance is a read replica. | `string` | `false` | no |
 | replicate\_source\_db | Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate. | `string` | `""` | no |
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-mysql"` | no |
 | skip\_final\_snapshot | Determines whether a final DB snapshot is created before the DB instance is deleted. If true is specified, no DBSnapshot is created. If false is specified, a DB snapshot is created before the DB instance is deleted, using the value from final\_snapshot\_identifier | `bool` | `true` | no |
 | snapshot\_identifier | Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05. | `string` | `""` | no |
+| source\_db | The ID of the source DB instance.  For cross region replicas, the full ARN should be provided | `string` | `""` | no |
+| storage\_encrypted | The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage\_encrypted is set to true and kms\_key\_id is not specified the default KMS key created in your account will be used | `bool` | `true` | no |
+| storage\_size | Select RDS Volume Size in GB. | `string` | `""` | no |
 | storage\_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'. | `string` | `"gp2"` | no |
 | subnet\_ids | A list of VPC subnet IDs | `list(string)` | `[]` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
