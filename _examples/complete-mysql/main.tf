@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "eu-west-1"
+  region = "ap-south-1"
 }
 
 module "vpc" {
@@ -15,13 +15,13 @@ module "vpc" {
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "0.15.3"
 
   name        = "subnets"
   environment = "test"
   label_order = ["environment", "name"]
 
-  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public"
   igw_id             = module.vpc.igw_id
@@ -52,7 +52,7 @@ module "mysql" {
   label_order = ["environment", "name"]
 
   engine            = "mysql"
-  engine_version    = "5.7.19"
+  engine_version    = "5.7.21"
   instance_class    = "db.t2.small"
   allocated_storage = 5
 
@@ -90,7 +90,6 @@ module "mysql" {
 
   # Database Deletion Protection
   deletion_protection = false
-
 
   parameters = [
     {

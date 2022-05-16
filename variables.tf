@@ -67,12 +67,36 @@ variable "storage_type" {
   default     = "gp2"
   description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'."
 }
-
-
-variable "kms_key_id" {
-  description = "The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage_encrypted is set to true and kms_key_id is not specified the default KMS key created in your account will be used"
+variable "existing_subnet_group" {
   type        = string
   default     = ""
+  description = "The existing DB subnet group to use for this instance (OPTIONAL)"
+}
+
+variable "existing_parameter_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing parameter group to use for this instance. (OPTIONAL)"
+}
+
+variable "existing_option_group_name" {
+  type        = string
+  default     = ""
+  description = "The existing option group to use for this instance. (OPTIONAL)"
+
+}
+
+variable "kms_key_id" {
+  type        = string
+  default     = ""
+  description = "The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage_encrypted is set to true and kms_key_id is not specified the default KMS key created in your account will be used"
+
+}
+variable "storage_encrypted" {
+  type        = bool
+  default     = true
+  description = "The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage_encrypted is set to true and kms_key_id is not specified the default KMS key created in your account will be used"
+
 }
 
 variable "replicate_source_db" {
@@ -91,7 +115,6 @@ variable "license_model" {
   type        = string
   default     = ""
   description = "License model information for this DB instance. Optional, but required for some DB engines, i.e. Oracle SE1"
-
 }
 
 variable "iam_database_authentication_enabled" {
@@ -122,14 +145,12 @@ variable "instance_class" {
   type        = string
   default     = ""
   description = "The instance type of the RDS instance"
-
 }
 
 variable "database_name" {
   type        = string
   default     = "test"
   description = "database name for the master DB"
-
 }
 
 variable "username" {
@@ -155,11 +176,21 @@ variable "vpc_security_group_ids" {
   default     = []
   description = "List of VPC security groups to associate"
 }
-
+variable "read_replica" {
+  description = "Specifies whether this RDS instance is a read replica."
+  type        = string
+  default     = false
+}
 variable "db_subnet_group_name" {
   type        = string
   default     = ""
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
+}
+
+variable "source_db" {
+  default     = ""
+  type        = string
+  description = "The ID of the source DB instance.  For cross region replicas, the full ARN should be provided"
 }
 
 variable "parameter_group_description" {
@@ -211,6 +242,11 @@ variable "monitoring_role_arn" {
   description = "The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring_interval is non-zero."
 }
 
+variable "storage_size" {
+  type        = string
+  default     = ""
+  description = "Select RDS Volume Size in GB."
+}
 
 variable "monitoring_role_name" {
   type        = string
@@ -391,7 +427,7 @@ variable "performance_insights_enabled" {
 
 variable "performance_insights_retention_period" {
   type        = number
-  default     = 7
+  default     = 0
   description = "The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years)."
 }
 

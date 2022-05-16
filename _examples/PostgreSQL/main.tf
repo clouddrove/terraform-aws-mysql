@@ -43,10 +43,10 @@ module "security_group" {
   label_order   = ["environment", "name"]
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [1521]
+  allowed_ports = [5432]
 }
 
-module "oracle" {
+module "postgresql" {
   source = "../../"
 
   name        = "sg"
@@ -54,18 +54,18 @@ module "oracle" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  engine            = "oracle-se2"
-  engine_version    = "19.0.0.0.ru-2021-10.rur-2021-10.r1"
+  engine            = "postgres"
+  engine_version    = "14.1"
   instance_class    = "db.t3.medium"
   allocated_storage = 50
   storage_encrypted = true
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
-  family = "oracle-se2-19"
+  family = "postgres14"
   # DB Details
   database_name = "test"
-  username      = "admin"
+  username      = "dbname"
   password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "1521"
+  port          = "5432"
 
   vpc_security_group_ids = [module.security_group.security_group_ids]
 
@@ -77,13 +77,14 @@ module "oracle" {
   # disable backups to create DB faster
   backup_retention_period = 0
 
-  enabled_cloudwatch_logs_exports = ["audit"]
+  enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
 
   # DB subnet group
   subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
+
   # DB option group
-  major_engine_version = "19"
+  major_engine_version = "14"
 
   # Snapshot name upon DB deletion
 

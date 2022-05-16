@@ -15,7 +15,7 @@ module "vpc" {
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.0"
+  version = "0.15.3"
 
   name        = "subnets"
   environment = "test"
@@ -142,7 +142,7 @@ module "master" {
 module "replica" {
   source = "../../"
 
-  identifier = "demodb-replica-mysql"
+  #  identifier = "demodb-replica-mysql"
 
   # Source database. For cross-region use this_db_instance_arn
   replicate_source_db = module.master.id
