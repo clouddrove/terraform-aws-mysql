@@ -1,4 +1,3 @@
-
 #Module      : label
 #Description : This terraform module is designed to generate consistent label names and
 #              tags for resources. You can use terraform-labels to implement a strict
@@ -86,9 +85,9 @@ resource "aws_db_subnet_group" "db_subnet_group" {
   count = var.enabled ? 1 : 0
 
   description = format("Database subnet group for%s%s", var.delimiter, module.labels.id)
-  #  name_prefix = format("subnet%s%s", var.delimiter, module.labels.id)
-  subnet_ids = var.subnet_ids
-  tags       = module.labels.tags
+  name        = module.labels.id
+  subnet_ids  = var.subnet_ids
+  tags        = module.labels.tags
 
 
   lifecycle {
