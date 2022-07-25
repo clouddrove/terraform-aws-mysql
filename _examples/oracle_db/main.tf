@@ -7,7 +7,7 @@ module "vpc" {
   version = "0.15.0"
 
   name        = "vpc"
-  environment = "tested"
+  environment = "test"
   label_order = ["environment", "name"]
 
   cidr_block = "10.0.0.0/16"
@@ -18,7 +18,7 @@ module "private_subnets" {
   version = "0.15.3"
 
   name        = "subnets"
-  environment = "tested"
+  environment = "test"
   label_order = ["name", "environment"]
 
   nat_gateway_enabled = true
@@ -38,7 +38,7 @@ module "security_group" {
   version = "0.15.0"
 
   name          = "security-group"
-  environment   = "tested"
+  environment   = "test"
   protocol      = "tcp"
   label_order   = ["environment", "name"]
   vpc_id        = module.vpc.vpc_id
@@ -51,7 +51,7 @@ module "oracle" {
 
   name        = "sg"
   application = "clouddrove"
-  environment = "tested"
+  environment = "test"
   label_order = ["environment", "name"]
 
   engine            = "oracle-se2"
@@ -62,7 +62,7 @@ module "oracle" {
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
   family = "oracle-se2-19"
   # DB Details
-  database_name = "tested"
+  database_name = "test"
   username      = "admin"
   password      = "esfsgcGdfawAhdxtfjm!"
   port          = "1521"
