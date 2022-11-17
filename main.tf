@@ -31,7 +31,6 @@ locals {
   option_group                          = length(aws_db_option_group.db_option_group.*.id) > 0 ? aws_db_option_group.db_option_group[0].id : var.existing_option_group_name
   performance_insights_enabled          = var.performance_insights_retention_period == 0 ? false : true
   performance_insights_retention_period = var.performance_insights_retention_period > 7 ? 731 : 7
-  storage_size                          = coalesce(var.storage_size, lookup(local.engine_defaults[local.engine_class], "storage_size", 10))
   license_model                         = lookup(local.engine_defaults[local.engine_class], "license", null)
   port                                  = coalesce(var.port, lookup(local.engine_defaults[local.engine_class], "port", "3306"))
 
@@ -177,7 +176,7 @@ resource "aws_db_instance" "this" {
   engine            = var.engine
   engine_version    = var.engine_version
   instance_class    = var.instance_class
-  allocated_storage = local.storage_size
+  allocated_storage = var.storage_size
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
   kms_key_id        = var.kms_key_id
