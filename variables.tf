@@ -149,7 +149,7 @@ variable "instance_class" {
 
 variable "database_name" {
   type        = string
-  default     = "test"
+  default     = ""
   description = "database name for the master DB"
 }
 
@@ -244,7 +244,7 @@ variable "monitoring_role_arn" {
 
 variable "storage_size" {
   type        = string
-  default     = ""
+  default     = "50"
   description = "Select RDS Volume Size in GB."
 }
 

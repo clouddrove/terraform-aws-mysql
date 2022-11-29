@@ -54,7 +54,7 @@ module "sqlserver" {
 
   engine            = "sqlserver-ee"
   engine_version    = "15.00.4153.1.v1"
-  instance_class    = "db.t3.xlarge"
+  instance_class    = "db.t3.small"
   allocated_storage = 50
 
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
@@ -86,5 +86,4 @@ module "sqlserver" {
 
   # DB option group
   major_engine_version = "15.00"
-
 }
