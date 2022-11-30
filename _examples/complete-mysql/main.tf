@@ -23,12 +23,11 @@ module "subnets" {
 
   availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
-  type               = "private"
+  type               = "public"
   igw_id             = module.vpc.igw_id
   cidr_block         = module.vpc.vpc_cidr_block
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
-
 
 module "security_group" {
   source  = "clouddrove/security-group/aws"
@@ -40,11 +39,11 @@ module "security_group" {
   label_order   = ["environment", "name"]
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [1433]
+  allowed_ports = [3306]
 }
 
 
-module "sqlserver" {
+module "mysql" {
   source = "../../"
 
   name        = "sg"
@@ -52,18 +51,18 @@ module "sqlserver" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  engine            = "sqlserver-ee"
-  engine_version    = "15.00.4153.1.v1"
-  instance_class    = "db.t3.xlarge"
-  allocated_storage = 50
+  engine            = "mysql"
+  engine_version    = "5.7.21"
+  instance_class    = "db.t2.small"
+  allocated_storage = 5
 
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
 
   # DB Details
-  database_name = ""
-  username      = "admin"
+  database_name = "test"
+  username      = "user"
   password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "1433"
+  port          = "3306"
 
   vpc_security_group_ids = [module.security_group.security_group_ids]
 
@@ -75,16 +74,48 @@ module "sqlserver" {
   # disable backups to create DB faster
   backup_retention_period = 0
 
-  # enabled_cloudwatch_logs_exports = ["audit", "general"]
+  enabled_cloudwatch_logs_exports = ["audit", "general"]
 
   # DB subnet group
-  subnet_ids          = module.subnets.private_subnet_id
-  publicly_accessible = false
+  subnet_ids          = module.subnets.public_subnet_id
+  publicly_accessible = true
 
   # DB parameter group
-  family = "sqlserver-ee-15.0"
+  family = "mysql5.7"
 
   # DB option group
-  major_engine_version = "15.00"
+  major_engine_version = "5.7"
 
+  # Snapshot name upon DB deletion
+
+  # Database Deletion Protection
+  deletion_protection = false
+
+  parameters = [
+    {
+      name  = "character_set_client"
+      value = "utf8"
+    },
+    {
+      name  = "character_set_server"
+      value = "utf8"
+    }
+  ]
+
+  options = [
+    {
+      option_name = "MARIADB_AUDIT_PLUGIN"
+
+      option_settings = [
+        {
+          name  = "SERVER_AUDIT_EVENTS"
+          value = "CONNECT"
+        },
+        {
+          name  = "SERVER_AUDIT_FILE_ROTATIONS"
+          value = "37"
+        },
+      ]
+    },
+  ]
 }

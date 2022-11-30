@@ -56,6 +56,7 @@ module "sqlserver" {
   engine_version    = "15.00.4153.1.v1"
   instance_class    = "db.t3.small"
   allocated_storage = 50
+  timezone          = "GMT Standard Time"
 
   # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
 
