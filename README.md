@@ -184,7 +184,7 @@ Here are some examples of how you can use this module in your inventory structur
 | create\_db\_parameter\_group | Whether to create a database parameter group | `bool` | `true` | no |
 | create\_db\_subnet\_group | Whether to create a database subnet group | `bool` | `true` | no |
 | create\_monitoring\_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | `bool` | `false` | no |
-| database\_name | database name for the master DB | `string` | `"test"` | no |
+| database\_name | database name for the master DB | `string` | `""` | no |
 | db\_subnet\_group\_name | Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC | `string` | `""` | no |
 | delete\_automated\_backups | Specifies whether to remove automated backups immediately after the DB instance is deleted | `bool` | `true` | no |
 | deletion\_protection | The database can't be deleted when this value is set to true. | `bool` | `false` | no |
@@ -233,7 +233,7 @@ Here are some examples of how you can use this module in your inventory structur
 | snapshot\_identifier | Specifies whether or not to create this database from a snapshot. This correlates to the snapshot ID you'd find in the RDS console, e.g: rds:production-2015-06-26-06-05. | `string` | `""` | no |
 | source\_db | The ID of the source DB instance.  For cross region replicas, the full ARN should be provided | `string` | `""` | no |
 | storage\_encrypted | The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage\_encrypted is set to true and kms\_key\_id is not specified the default KMS key created in your account will be used | `bool` | `true` | no |
-| storage\_size | Select RDS Volume Size in GB. | `string` | `""` | no |
+| storage\_size | Select RDS Volume Size in GB. | `string` | `"50"` | no |
 | storage\_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'standard' if not. Note that this behaviour is different from the AWS web console, where the default is 'gp2'. | `string` | `"gp2"` | no |
 | subnet\_ids | A list of VPC subnet IDs | `list(string)` | `[]` | no |
 | tags | Additional tags (e.g. map(`BusinessUnit`,`XYZ`). | `map(any)` | `{}` | no |
