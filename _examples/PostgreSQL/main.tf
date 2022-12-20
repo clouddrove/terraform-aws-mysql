@@ -1,5 +1,5 @@
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 }
 
 module "vpc" {
@@ -7,10 +7,10 @@ module "vpc" {
   version = "0.15.0"
 
   name        = "vpc"
-  environment = "test"
+  environment = "staging"
   label_order = ["environment", "name"]
 
-  cidr_block = "10.0.0.0/16"
+  cidr_block = "10.30.0.0/16"
 }
 
 module "private_subnets" {
@@ -18,13 +18,13 @@ module "private_subnets" {
   version = "0.15.3"
 
   name        = "subnets"
-  environment = "test"
+  environment = "staging"
   label_order = ["name", "environment"]
 
   nat_gateway_enabled = true
 
-  availability_zones              = ["ap-south-1a", "ap-south-1b"]
-  vpc_id                          = module.vpc.vpc_id
+  availability_zones              = ["us-east-1a", "us-east-1b"]
+  vpc_id                          = vpc-0ee19486fa69d866e
   type                            = "public-private"
   igw_id                          = module.vpc.igw_id
   cidr_block                      = module.vpc.vpc_cidr_block
@@ -41,7 +41,7 @@ module "security_group" {
   environment   = "test"
   protocol      = "tcp"
   label_order   = ["environment", "name"]
-  vpc_id        = module.vpc.vpc_id
+  vpc_id        = vpc-0ee19486fa69d866e
   allowed_ip    = ["0.0.0.0/0"]
   allowed_ports = [5432]
 }
@@ -50,8 +50,8 @@ module "postgresql" {
   source = "../../"
 
   name        = "sg"
-  application = "clouddrove"
-  environment = "test"
+  application = "outline"
+  environment = "staging"
   label_order = ["environment", "name"]
 
   engine            = "postgres"
