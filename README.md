@@ -80,7 +80,7 @@ Here are some examples of how you can use this module in your inventory structur
 ```hcl
   module "mysql" {
   source                      = "clouddrove/mysql/aws"
-  version                     = "1.0.1"
+  version                     = "1.3.0"
 
     name          = "sg"
     environment   = "test"
