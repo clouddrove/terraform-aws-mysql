@@ -4,7 +4,7 @@ provider "aws" {
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name        = "vpc"
   environment = "test"
@@ -15,7 +15,7 @@ module "vpc" {
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "0.15.3"
+  version = "1.3.0"
 
   name        = "subnets"
   environment = "test"
@@ -31,7 +31,7 @@ module "subnets" {
 
 module "security_group" {
   source  = "clouddrove/security-group/aws"
-  version = "0.15.0"
+  version = "1.3.0"
 
   name          = "security-group"
   environment   = "test"
@@ -52,7 +52,7 @@ module "mysql" {
   label_order = ["environment", "name"]
 
   engine            = "mysql"
-  engine_version    = "5.7.21"
+  engine_version    = "8.0.28"
   instance_class    = "db.t2.small"
   allocated_storage = 5
 
@@ -81,10 +81,10 @@ module "mysql" {
   publicly_accessible = true
 
   # DB parameter group
-  family = "mysql5.7"
+  family = "mysql8.0"
 
   # DB option group
-  major_engine_version = "5.7"
+  major_engine_version = "8.0"
 
   # Snapshot name upon DB deletion
 
