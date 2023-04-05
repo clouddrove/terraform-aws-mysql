@@ -182,7 +182,7 @@ resource "aws_db_instance" "this" {
   kms_key_id        = var.kms_key_id
   license_model     = var.license_model == "" ? local.license_model : var.license_model
 
-  name                                = var.database_name
+  db_name                             = var.database_name
   username                            = var.username
   password                            = var.password
   port                                = local.port
