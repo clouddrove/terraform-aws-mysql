@@ -10,15 +10,15 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/complete-mssql" # Location of package manifests
+    directory: "_example/complete-mssql" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/complete-mysql" # Location of package manifests
+    directory: "_example/complete-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/MariaDb" # Location of package manifests
+    directory: "_example/MariaDb" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
@@ -26,10 +26,10 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/PostgreSQL" # Location of package manifests
+    directory: "_example/PostgreSQL" # Location of package manifests
     schedule:
       interval: "weekly"
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/replica-mysql" # Location of package manifests
+    directory: "_example/replica-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
