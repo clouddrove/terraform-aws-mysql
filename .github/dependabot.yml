@@ -9,27 +9,69 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_example/complete-mssql" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_example/complete-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_example/MariaDb" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_examples/oracle_db" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_example/PostgreSQL" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "_example/replica-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
+      # Add assignees
+    assignees:
+      - "clouddrove-ci"
+      # Add reviewer
+    reviewers:
+      - "approvers"
