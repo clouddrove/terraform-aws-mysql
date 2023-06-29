@@ -1,7 +1,13 @@
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 provider "aws" {
   region = "ap-south-1"
 }
 
+####----------------------------------------------------------------------------------
+## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
+####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "1.3.1"
@@ -13,6 +19,9 @@ module "vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
+####----------------------------------------------------------------------------------
+## A subnet is a range of IP addresses in your VPC.
+####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "1.3.0"
@@ -32,47 +41,39 @@ module "private_subnets" {
   assign_ipv6_address_on_creation = false
 }
 
-
-module "security_group" {
-  source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
-
-  name          = "security-group"
-  environment   = "test"
-  protocol      = "tcp"
-  label_order   = ["environment", "name"]
-  vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [5432]
-}
-
+####----------------------------------------------------------------------------------
+## relational database management system.
+####----------------------------------------------------------------------------------
 module "postgresql" {
   source = "../../"
 
-  name        = "sg"
-  application = "clouddrove"
+  name        = "postgresql"
   environment = "test"
   label_order = ["environment", "name"]
 
   engine            = "postgres"
-  engine_version    = "14.1"
+  engine_version    = "14.6"
   instance_class    = "db.t3.medium"
   allocated_storage = 50
+  engine_name       = "postgres"
   storage_encrypted = true
-  # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
-  family = "postgres14"
+  family            = "postgres14"
   # DB Details
-  database_name = "test"
-  username      = "dbname"
-  password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "5432"
-
-  vpc_security_group_ids = [module.security_group.security_group_ids]
+  db_name  = "test"
+  username = "dbname"
+  password = "esfsgcGdfawAhdxtfjm!"
+  port     = "5432"
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
   multi_az           = false
 
+  ####----------------------------------------------------------------------------------
+  ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
+  ####----------------------------------------------------------------------------------
+  vpc_id        = module.vpc.vpc_id
+  allowed_ip    = [module.vpc.vpc_cidr_block]
+  allowed_ports = [5432]
 
   # disable backups to create DB faster
   backup_retention_period = 0
@@ -86,9 +87,10 @@ module "postgresql" {
   # DB option group
   major_engine_version = "14"
 
-  # Snapshot name upon DB deletion
-
   # Database Deletion Protection
   deletion_protection = false
+
+  ###ssm parameter
+  ssm_parameter_endpoint_enabled = true
 
 }

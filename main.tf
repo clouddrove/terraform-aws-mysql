@@ -1,147 +1,126 @@
-#Module      : label
-#Description : This terraform module is designed to generate consistent label names and
-#              tags for resources. You can use terraform-labels to implement a strict
-#              naming convention.
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 module "labels" {
   source  = "clouddrove/labels/aws"
   version = "1.3.0"
 
   name        = var.name
-  repository  = var.repository
   environment = var.environment
   managedby   = var.managedby
   label_order = var.label_order
 }
 
+####----------------------------------------------------------------------------------
+## The resource random_id generates random numbers that are intended to be used as unique identifiers for other resources.
+####----------------------------------------------------------------------------------
+resource "random_id" "password" {
+  count       = var.enabled ? 1 : 0
+  byte_length = 20
+}
+
 locals {
-  family                                = coalesce(var.family, join(local.family_separator, [var.engine, local.major_version_substring]))
-  family_separator                      = local.is_mssql || local.is_oracle || local.is_postgres || local.is_mariadb ? "-" : ""
-  major_version_substring               = local.is_mssql ? substr(local.major_version, 0, length(local.major_version) - 1) : local.major_version
-  is_mssql                              = local.engine_class == "sqlserver"
-  is_oracle                             = local.engine_class == "oracle"
-  is_mariadb                            = local.engine_class == "mariadb"
-  is_postgres                           = local.engine_class == "postgres"
-  major_version                         = join(".", local.version_chunk[0])
-  engine_class                          = element(split("-", var.engine), 0)
-  version_chunk                         = chunklist(split(".", local.engine_version), local.is_single_major_version ? 1 : 2)
-  engine_version                        = coalesce(var.engine_version, local.engine_defaults[local.engine_class]["version"])
-  options                               = []
-  subnet_group                          = length(aws_db_subnet_group.db_subnet_group.*.id) > 0 ? aws_db_subnet_group.db_subnet_group[0].id : var.existing_subnet_group
-  parameter_group                       = length(aws_db_parameter_group.main.*.id) > 0 ? aws_db_parameter_group.main[0].id : var.existing_parameter_group_name
-  option_group                          = length(aws_db_option_group.db_option_group.*.id) > 0 ? aws_db_option_group.db_option_group[0].id : var.existing_option_group_name
-  performance_insights_enabled          = var.performance_insights_retention_period == 0 ? false : true
-  performance_insights_retention_period = var.performance_insights_retention_period > 7 ? 731 : 7
-  license_model                         = lookup(local.engine_defaults[local.engine_class], "license", null)
-  port                                  = coalesce(var.port, lookup(local.engine_defaults[local.engine_class], "port", "3306"))
+  monitoring_role_arn = var.enabled_monitoring_role ? aws_iam_role.enhanced_monitoring[0].arn : var.monitoring_role_arn
 
-  is_single_major_version = contains(
-    lookup(local.engine_defaults[local.engine_class], "single_major_version", []),
-    element(split(".", local.engine_version), 0)
-  )
-  engine_defaults = {
-    mariadb = {
-      version = "10.4.13"
-    }
-    mysql = {
-      version = "8.0.21"
-    }
-    oracle = {
-      port                 = "1521"
-      version              = "19.0.0.0.ru-2020-10.rur-2020-10.r1"
-      storage_size         = "100"
-      license              = "license-included"
-      jdbc_proto           = "oracle:thin"
-      single_major_version = ["18", "19"]
-    }
-    postgres = {
-      port                 = "5432"
-      version              = "12.4"
-      jdbc_proto           = "postgresql"
-      single_major_version = ["10", "11", "12"]
-    }
-    sqlserver = {
-      port         = "1433"
-      version      = "15.00.4043.16.v1"
-      storage_size = "200"
-      license      = "license-included"
-      jdbc_proto   = "sqlserver"
-    }
-  }
-  parameter_lookup = var.timezone == "" || local.is_mssql ? "none" : "timezone"
-  parameters = {
-    "none" = []
-    "timezone" = [
-      {
-        name  = local.is_postgres ? "timezone" : "time_zone"
-        value = var.timezone
-      },
-    ]
-  }
-  same_region_replica = var.read_replica && length(split(":", var.source_db)) == 1
+  final_snapshot_identifier = var.skip_final_snapshot ? null : "${var.final_snapshot_identifier_prefix}-${var.identifier}-${try(random_id.snapshot_identifier[0].hex, "")}"
+
+  identifier        = var.use_identifier_prefix ? null : var.identifier
+  identifier_prefix = var.use_identifier_prefix ? "${var.identifier}-" : null
+
+  monitoring_role_name        = var.monitoring_role_use_name_prefix ? null : var.monitoring_role_name
+  monitoring_role_name_prefix = var.monitoring_role_use_name_prefix ? "${var.monitoring_role_name}-" : null
+  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this.*.id) : var.db_subnet_group_name
+
+  # Replicas will use source metadata
+  username       = var.replicate_source_db != null ? null : var.username
+  password       = var.password == "" ? join("", random_id.password.*.b64_url) : var.password
+  engine         = var.replicate_source_db != null ? null : var.engine
+  engine_version = var.replicate_source_db != null ? null : var.engine_version
+
+  name = var.use_name_prefix ? null : var.name
+  //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
+
+  description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
-resource "aws_db_subnet_group" "db_subnet_group" {
-  count = var.enabled ? 1 : 0
+resource "random_id" "snapshot_identifier" {
+  count = var.enabled && !var.skip_final_snapshot ? 1 : 0
 
-  description = format("Database subnet group for%s%s", var.delimiter, module.labels.id)
+  keepers = {
+    id = var.identifier
+  }
+
+  byte_length = 4
+}
+
+####----------------------------------------------------------------------------------
+### a collection of subnets (typically private) that you create for a VPC and that you then designate for your DB instances.
+####----------------------------------------------------------------------------------
+resource "aws_db_subnet_group" "this" {
+  count       = var.enabled && var.enabled_db_subnet_group ? 1 : 0
   name        = module.labels.id
+  description = local.description
   subnet_ids  = var.subnet_ids
-  tags        = module.labels.tags
 
-
-  lifecycle {
-    create_before_destroy = true
-  }
-
+  tags = merge(
+    module.labels.tags,
+    var.db_subnet_group_tags
+  )
 }
 
-resource "aws_db_parameter_group" "main" {
+####----------------------------------------------------------------------------------
+### Provides an RDS DB parameter group resource.
+####----------------------------------------------------------------------------------
+resource "aws_db_parameter_group" "this" {
   count = var.enabled ? 1 : 0
 
-  description = format("Database parameter group for%s%s", var.delimiter, module.labels.id)
-  name_prefix = format("subnet%s%s", module.labels.id, var.delimiter)
+  name        = module.labels.id
+  description = local.description
   family      = var.family
 
   dynamic "parameter" {
-    for_each = concat(var.parameters, local.parameters[local.parameter_lookup])
+    for_each = var.parameters
     content {
-      apply_method = lookup(parameter.value, "apply_method", null)
       name         = parameter.value.name
       value        = parameter.value.value
+      apply_method = lookup(parameter.value, "apply_method", null)
     }
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 
   tags = merge(
     module.labels.tags,
+    var.db_parameter_group_tags,
     {
       "Name" = format("%s%sparameter", module.labels.id, var.delimiter)
     }
   )
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
-resource "aws_db_option_group" "db_option_group" {
+####----------------------------------------------------------------------------------
+### Provides an RDS DB option group resource.
+####----------------------------------------------------------------------------------
+resource "aws_db_option_group" "this" {
   count = var.enabled ? 1 : 0
 
-  engine_name              = var.engine
+  name                     = module.labels.id
+  option_group_description = local.description
+  engine_name              = var.engine_name
   major_engine_version     = var.major_engine_version
-  name_prefix              = format("subnet%s%s", module.labels.id, var.delimiter)
-  option_group_description = var.option_group_description == "" ? format("Option group for %s", module.labels.id) : var.option_group_description
 
   dynamic "option" {
-    for_each = concat(var.options, local.options)
+    for_each = var.options
     content {
-      db_security_group_memberships  = lookup(option.value, "db_security_group_memberships", null)
       option_name                    = option.value.option_name
       port                           = lookup(option.value, "port", null)
       version                        = lookup(option.value, "version", null)
+      db_security_group_memberships  = lookup(option.value, "db_security_group_memberships", null)
       vpc_security_group_memberships = lookup(option.value, "vpc_security_group_memberships", null)
 
       dynamic "option_settings" {
-        for_each = lookup(option.value, "option_settings", null)
+        for_each = lookup(option.value, "option_settings", [])
         content {
           name  = lookup(option_settings.value, "name", null)
           value = lookup(option_settings.value, "value", null)
@@ -150,81 +129,302 @@ resource "aws_db_option_group" "db_option_group" {
     }
   }
 
-  lifecycle {
-    create_before_destroy = true
-  }
   tags = merge(
     module.labels.tags,
+    var.db_option_group_tags,
     {
       "Name" = format("%s%soption-group", module.labels.id, var.delimiter)
     }
   )
 
   timeouts {
-    delete = lookup(var.option_group_timeouts, "delete", null)
+    delete = lookup(var.timeouts, "delete", null)
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
-#tfsec:ignore:aws-rds-no-public-db-access
-#tfsec:ignore:aws-rds-no-public-db-access
-#tfsec:ignore:aws-rds-encrypt-instance-storage-data
+
+##------------------------------------------------------------------------------
+### CloudWatch Log Group
+##------------------------------------------------------------------------------
+resource "aws_cloudwatch_log_group" "this" {
+  for_each = toset([for log in var.enabled_cloudwatch_logs_exports : log if var.enabled && var.enabled_cloudwatch_log_group && !var.use_identifier_prefix])
+
+  name              = "/aws/rds/instance/${module.labels.id}/${each.value}"
+  retention_in_days = var.cloudwatch_log_group_retention_in_days
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+
+  tags = merge(
+    module.labels.tags,
+    var.cloudwatch_log_group_tags
+  )
+}
+
+##-----------------------------------------------------------------------------------
+### Generates an IAM policy document in JSON format for use with resources that expect policy documents such as aws_iam_policy.
+##-----------------------------------------------------------------------------------
+
+data "aws_iam_policy_document" "enhanced_monitoring" {
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["monitoring.rds.amazonaws.com"]
+    }
+  }
+}
+
+####----------------------------------------------------------------------------------
+### IAM - Manage Roles
+### AWS Identity and Access Management (IAM) roles are entities you create and assign specific permissions to that allow trusted identities such as workforce identities and applications to perform actions in AWS
+####----------------------------------------------------------------------------------
+resource "aws_iam_role" "enhanced_monitoring" {
+  count = var.enabled_monitoring_role ? 1 : 0
+
+  name                 = module.labels.id
+  assume_role_policy   = data.aws_iam_policy_document.enhanced_monitoring.json
+  description          = var.monitoring_role_description
+  permissions_boundary = var.monitoring_role_permissions_boundary
+
+  tags = merge(
+    {
+      "Name" = format("%s", var.monitoring_role_name)
+    },
+    module.labels.tags,
+    var.mysql_iam_role_tags
+  )
+}
+
+resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
+  count = var.enabled_monitoring_role ? 1 : 0
+
+  role       = aws_iam_role.enhanced_monitoring[0].name
+  policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
+##----------------------------------------------------------------------------------
+## Below resources will create SECURITY-GROUP and its components.
+##----------------------------------------------------------------------------------
+resource "aws_security_group" "default" {
+  count = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
+
+  name        = format("%s-sg", module.labels.id)
+  vpc_id      = var.vpc_id
+  description = var.sg_description
+  tags        = module.labels.tags
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+data "aws_security_group" "existing" {
+  count  = var.is_external ? 1 : 0
+  id     = var.existing_sg_id
+  vpc_id = var.vpc_id
+}
+
+##----------------------------------------------------------------------------------
+## Below resources will create SECURITY-GROUP-RULE and its components.
+##----------------------------------------------------------------------------------
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
+resource "aws_security_group_rule" "egress" {
+  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
+
+  description       = var.sg_egress_description
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
+  security_group_id = join("", aws_security_group.default.*.id)
+}
+#tfsec:ignore:aws-ec2-no-public-egress-sgr
+resource "aws_security_group_rule" "egress_ipv6" {
+  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
+
+  description       = var.sg_egress_ipv6_description
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "-1"
+  ipv6_cidr_blocks  = ["::/0"]
+  security_group_id = join("", aws_security_group.default.*.id)
+}
+
+resource "aws_security_group_rule" "ingress" {
+  count = length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
+
+  description       = var.sg_ingress_description
+  type              = "ingress"
+  from_port         = element(var.allowed_ports, count.index)
+  to_port           = element(var.allowed_ports, count.index)
+  protocol          = var.protocol
+  cidr_blocks       = var.allowed_ip
+  security_group_id = join("", aws_security_group.default.*.id)
+}
+
+##----------------------------------------------------------------------------------
+## Below resources will create KMS-KEY and its components.
+##----------------------------------------------------------------------------------
+resource "aws_kms_key" "default" {
+  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
+
+  description              = var.kms_description
+  key_usage                = var.key_usage
+  deletion_window_in_days  = var.deletion_window_in_days
+  is_enabled               = var.is_enabled
+  enable_key_rotation      = var.enable_key_rotation
+  customer_master_key_spec = var.customer_master_key_spec
+  policy                   = data.aws_iam_policy_document.default.json
+  multi_region             = var.kms_multi_region
+  tags                     = module.labels.tags
+}
+
+resource "aws_kms_alias" "default" {
+  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
+
+  name          = coalesce(var.alias, format("alias/%v", module.labels.id))
+  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default.*.id) : var.kms_key_id
+}
+
+##----------------------------------------------------------------------------------
+## Data block called to get Permissions that will be used in creating policy.
+##----------------------------------------------------------------------------------
+data "aws_partition" "current" {}
+data "aws_caller_identity" "current" {}
+data "aws_iam_policy_document" "default" {
+  version = "2012-10-17"
+  statement {
+    sid    = "Enable IAM User Permissions"
+    effect = "Allow"
+    principals {
+      type = "AWS"
+      identifiers = [
+        format(
+          "arn:%s:iam::%s:root",
+          join("", data.aws_partition.current.*.partition),
+          data.aws_caller_identity.current.account_id
+        )
+      ]
+    }
+    actions   = ["kms:*"]
+    resources = ["*"]
+  }
+}
+
+####----------------------------------------------------------------------------------
+### A database instance is a set of memory structures that manage database files.
+####----------------------------------------------------------------------------------
 resource "aws_db_instance" "this" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.enabled_read_replica ? 1 : 0
 
-  identifier = module.labels.id
+  identifier        = module.labels.id
+  identifier_prefix = local.identifier_prefix
 
-  engine            = var.engine
-  engine_version    = var.engine_version
+  engine            = local.engine
+  engine_version    = local.engine_version
   instance_class    = var.instance_class
-  allocated_storage = var.storage_size
+  allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
-  kms_key_id        = var.kms_key_id
-  license_model     = var.license_model == "" ? local.license_model : var.license_model
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  license_model     = var.license_model
 
-  db_name                             = var.database_name
-  username                            = var.username
-  password                            = var.password
-  port                                = local.port
+  db_name                             = var.db_name
+  username                            = local.username
+  password                            = local.password
+  port                                = var.port
+  domain                              = var.domain
+  domain_iam_role_name                = var.domain_iam_role_name
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
+  custom_iam_instance_profile         = var.custom_iam_instance_profile
 
-  snapshot_identifier = var.snapshot_identifier
-
-  vpc_security_group_ids = var.vpc_security_group_ids
-  db_subnet_group_name   = join("", aws_db_subnet_group.db_subnet_group.*.id)
-  parameter_group_name   = join("", aws_db_parameter_group.main.*.id)
-  option_group_name      = join("", aws_db_option_group.db_option_group.*.id)
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  db_subnet_group_name   = local.db_subnet_group_name
+  parameter_group_name   = join("", aws_db_parameter_group.this.*.name)
+  option_group_name      = join("", aws_db_option_group.this.*.name)
+  network_type           = var.network_type
 
   availability_zone   = var.availability_zone
   multi_az            = var.multi_az
   iops                = var.iops
+  storage_throughput  = var.storage_throughput
   publicly_accessible = var.publicly_accessible
-  monitoring_interval = var.monitoring_interval
-  monitoring_role_arn = var.monitoring_role_arn
+  ca_cert_identifier  = var.ca_cert_identifier
 
   allow_major_version_upgrade = var.allow_major_version_upgrade
   auto_minor_version_upgrade  = var.auto_minor_version_upgrade
   apply_immediately           = var.apply_immediately
   maintenance_window          = var.maintenance_window
-  skip_final_snapshot         = var.skip_final_snapshot
-  copy_tags_to_snapshot       = var.copy_tags_to_snapshot
-  final_snapshot_identifier   = module.labels.id
-  max_allocated_storage       = var.max_allocated_storage
 
-  performance_insights_enabled          = local.performance_insights_enabled
-  performance_insights_retention_period = local.performance_insights_enabled ? local.performance_insights_retention_period : null
+  # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments.html
+  dynamic "blue_green_update" {
+    for_each = length(var.blue_green_update) > 0 ? [var.blue_green_update] : []
 
-  backup_retention_period = var.backup_retention_period
+    content {
+      enabled = try(blue_green_update.value.enabled, null)
+    }
+  }
+
+  snapshot_identifier       = var.snapshot_identifier
+  copy_tags_to_snapshot     = var.copy_tags_to_snapshot
+  skip_final_snapshot       = var.skip_final_snapshot
+  final_snapshot_identifier = module.labels.id
+
+  performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
+  performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
+
+  replica_mode            = var.replica_mode
+  backup_retention_period = length(var.blue_green_update) > 0 ? coalesce(var.backup_retention_period, 1) : var.backup_retention_period
   backup_window           = var.backup_window
-  character_set_name      = local.is_oracle ? var.character_set_name : null
-  ca_cert_identifier      = var.ca_cert_identifier
+  max_allocated_storage   = var.max_allocated_storage
+  monitoring_interval     = var.monitoring_interval
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
 
+  character_set_name              = var.character_set_name
+  timezone                        = var.timezone
   enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
 
   deletion_protection      = var.deletion_protection
   delete_automated_backups = var.delete_automated_backups
 
-  tags = module.labels.tags
+  dynamic "restore_to_point_in_time" {
+    for_each = var.restore_to_point_in_time != null ? [var.restore_to_point_in_time] : []
+
+    content {
+      restore_time                             = lookup(restore_to_point_in_time.value, "restore_time", null)
+      source_db_instance_automated_backups_arn = lookup(restore_to_point_in_time.value, "source_db_instance_automated_backups_arn", null)
+      source_db_instance_identifier            = lookup(restore_to_point_in_time.value, "source_db_instance_identifier", null)
+      source_dbi_resource_id                   = lookup(restore_to_point_in_time.value, "source_dbi_resource_id", null)
+      use_latest_restorable_time               = lookup(restore_to_point_in_time.value, "use_latest_restorable_time", null)
+    }
+  }
+
+  dynamic "s3_import" {
+    for_each = var.s3_import != null ? [var.s3_import] : []
+
+    content {
+      source_engine         = "mysql"
+      source_engine_version = s3_import.value.source_engine_version
+      bucket_name           = s3_import.value.bucket_name
+      bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
+      ingestion_role        = s3_import.value.ingestion_role
+    }
+  }
+
+  tags = merge(
+    module.labels.tags,
+    var.db_instance_this_tags
+  )
+
+  depends_on = [aws_cloudwatch_log_group.this]
 
   timeouts {
     create = lookup(var.timeouts, "create", null)
@@ -232,9 +432,133 @@ resource "aws_db_instance" "this" {
     update = lookup(var.timeouts, "update", null)
   }
 
-  depends_on = [
-    aws_db_option_group.db_option_group,
-    aws_db_parameter_group.main,
-    aws_db_subnet_group.db_subnet_group,
-  ]
+}
+
+####----------------------------------------------------------------------------------
+### mysql replication
+####----------------------------------------------------------------------------------
+resource "aws_db_instance" "read" {
+  count = var.enabled && var.enabled_read_replica && var.enabled_replica ? 1 : 0
+
+  identifier        = format("%s-replica", module.labels.id)
+  identifier_prefix = local.identifier_prefix
+
+  engine            = null
+  engine_version    = null
+  instance_class    = var.replica_instance_class
+  allocated_storage = var.allocated_storage
+  storage_type      = var.storage_type
+  storage_encrypted = var.storage_encrypted
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  license_model     = var.license_model
+
+  db_name                             = null
+  username                            = null
+  password                            = local.password
+  port                                = var.port
+  domain                              = var.domain
+  domain_iam_role_name                = var.domain_iam_role_name
+  iam_database_authentication_enabled = var.iam_database_authentication_enabled
+  custom_iam_instance_profile         = var.custom_iam_instance_profile
+
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  db_subnet_group_name   = var.db_subnet_group_name
+  parameter_group_name   = join("", aws_db_instance.this.*.parameter_group_name)
+  option_group_name      = join("", aws_db_instance.this.*.option_group_name)
+  network_type           = var.network_type
+
+  availability_zone   = var.availability_zone
+  multi_az            = var.multi_az
+  iops                = var.iops
+  storage_throughput  = var.storage_throughput
+  publicly_accessible = var.publicly_accessible
+  ca_cert_identifier  = var.ca_cert_identifier
+
+  allow_major_version_upgrade = var.allow_major_version_upgrade
+  auto_minor_version_upgrade  = var.auto_minor_version_upgrade
+  apply_immediately           = var.apply_immediately
+  maintenance_window          = var.maintenance_window
+
+  # https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/blue-green-deployments.html
+  dynamic "blue_green_update" {
+    for_each = length(var.blue_green_update) > 0 ? [var.blue_green_update] : []
+
+    content {
+      enabled = try(blue_green_update.value.enabled, null)
+    }
+  }
+
+  snapshot_identifier       = var.snapshot_identifier
+  copy_tags_to_snapshot     = var.copy_tags_to_snapshot
+  skip_final_snapshot       = var.skip_final_snapshot
+  final_snapshot_identifier = module.labels.id
+
+  performance_insights_enabled          = var.performance_insights_enabled
+  performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
+  performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
+
+  replicate_source_db     = join("", aws_db_instance.this.*.identifier)
+  replica_mode            = var.replica_mode
+  backup_retention_period = length(var.blue_green_update) > 0 ? coalesce(var.backup_retention_period, 1) : var.backup_retention_period
+  backup_window           = var.backup_window
+  max_allocated_storage   = var.max_allocated_storage
+  monitoring_interval     = var.monitoring_interval
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
+
+  character_set_name              = var.character_set_name
+  timezone                        = var.timezone
+  enabled_cloudwatch_logs_exports = var.enabled_cloudwatch_logs_exports
+
+  deletion_protection      = var.deletion_protection
+  delete_automated_backups = var.delete_automated_backups
+
+  dynamic "restore_to_point_in_time" {
+    for_each = var.restore_to_point_in_time != null ? [var.restore_to_point_in_time] : []
+
+    content {
+      restore_time                             = lookup(restore_to_point_in_time.value, "restore_time", null)
+      source_db_instance_automated_backups_arn = lookup(restore_to_point_in_time.value, "source_db_instance_automated_backups_arn", null)
+      source_db_instance_identifier            = lookup(restore_to_point_in_time.value, "source_db_instance_identifier", null)
+      source_dbi_resource_id                   = lookup(restore_to_point_in_time.value, "source_dbi_resource_id", null)
+      use_latest_restorable_time               = lookup(restore_to_point_in_time.value, "use_latest_restorable_time", null)
+    }
+  }
+
+  dynamic "s3_import" {
+    for_each = var.s3_import != null ? [var.s3_import] : []
+
+    content {
+      source_engine         = "mysql"
+      source_engine_version = s3_import.value.source_engine_version
+      bucket_name           = s3_import.value.bucket_name
+      bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
+      ingestion_role        = s3_import.value.ingestion_role
+    }
+  }
+
+  tags = merge(
+    module.labels.tags,
+    var.db_instance_read_tags
+  )
+
+  depends_on = [aws_cloudwatch_log_group.this]
+
+  timeouts {
+    create = lookup(var.timeouts, "create", null)
+    delete = lookup(var.timeouts, "delete", null)
+    update = lookup(var.timeouts, "update", null)
+  }
+}
+
+##----------------------------------------------------------------------------------
+## Below resource will create ssm-parameter resource for mysql with endpoint.
+##----------------------------------------------------------------------------------
+resource "aws_ssm_parameter" "secret-endpoint" {
+  count = var.enabled && var.ssm_parameter_endpoint_enabled ? 1 : 0
+
+  name        = format("/%s/%s/endpoint", var.environment, var.name)
+  description = var.ssm_parameter_description
+  type        = var.ssm_parameter_type
+  value       = join("", aws_db_instance.this.*.endpoint)
+  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
 }
