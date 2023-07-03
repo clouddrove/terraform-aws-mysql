@@ -349,7 +349,7 @@ variable "enabled_cloudwatch_logs_exports" {
 
 variable "deletion_protection" {
   type        = bool
-  default     = false
+  default     = true
   description = "The database can't be deleted when this value is set to true."
 }
 
