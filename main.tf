@@ -321,6 +321,7 @@ data "aws_iam_policy_document" "default" {
 ####----------------------------------------------------------------------------------
 ### A database instance is a set of memory structures that manage database files.
 ####----------------------------------------------------------------------------------
+#tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "this" {
   count = var.enabled && var.enabled_read_replica ? 1 : 0
 
@@ -437,6 +438,7 @@ resource "aws_db_instance" "this" {
 ####----------------------------------------------------------------------------------
 ### mysql replication
 ####----------------------------------------------------------------------------------
+#tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "read" {
   count = var.enabled && var.enabled_read_replica && var.enabled_replica ? 1 : 0
 
