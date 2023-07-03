@@ -48,7 +48,7 @@ module "sqlserver" {
   label_order = ["environment", "name"]
 
   engine            = "sqlserver-se"
-  engine_version    = "14.00"
+  engine_version    = "15.00"
   instance_class    = "db.t3.large"
   engine_name       = "sqlserver-se"
   allocated_storage = 20
@@ -72,7 +72,7 @@ module "sqlserver" {
   allowed_ports = [1433]
 
   # disable backups to create DB faster
-  backup_retention_period = 0
+  backup_retention_period = 7
 
   enabled_cloudwatch_logs_exports = ["error"]
   enabled_cloudwatch_log_group    = false
@@ -82,10 +82,10 @@ module "sqlserver" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "sqlserver-se-14.0"
+  family = "sqlserver-se-15.0"
 
   # DB option group
-  major_engine_version = "14.00"
+  major_engine_version = "15.00"
 
   ###ssm parameter
   ssm_parameter_endpoint_enabled = true

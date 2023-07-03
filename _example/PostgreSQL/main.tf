@@ -88,7 +88,7 @@ module "postgresql" {
   major_engine_version = "14"
 
   # Database Deletion Protection
-  deletion_protection = false
+  deletion_protection = true
 
   ###ssm parameter
   ssm_parameter_endpoint_enabled = true

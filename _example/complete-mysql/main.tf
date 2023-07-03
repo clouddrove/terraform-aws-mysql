@@ -70,7 +70,7 @@ module "mysql" {
   multi_az           = false
 
   # disable backups to create DB faster
-  backup_retention_period = 1
+  backup_retention_period = 7
 
   enabled_cloudwatch_logs_exports = ["audit", "general"]
 
@@ -85,7 +85,7 @@ module "mysql" {
   major_engine_version = "8.0"
 
   # Database Deletion Protection
-  deletion_protection = false
+  deletion_protection = true
 
   parameters = [
     {

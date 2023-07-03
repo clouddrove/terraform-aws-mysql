@@ -82,7 +82,7 @@ module "mysql" {
   # Snapshot name upon DB deletion
 
   # Database Deletion Protection
-  deletion_protection = false
+  deletion_protection = true
 
   ###ssm parameter
   ssm_parameter_endpoint_enabled = true
