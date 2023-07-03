@@ -56,13 +56,14 @@ module "sqlserver" {
   license_model     = "license-included"
 
   # DB Details
-  db_name            = "mssql"
-  username           = "admin"
-  password           = "esfsgcGdfawAhdxtfjm!"
-  port               = "1433"
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
-  multi_az           = true
+  db_name             = "mssql"
+  username            = "admin"
+  password            = "esfsgcGdfawAhdxtfjm!"
+  port                = "1433"
+  maintenance_window  = "Mon:00:00-Mon:03:00"
+  backup_window       = "03:00-06:00"
+  multi_az            = true
+  deletion_protection = true
 
   ####----------------------------------------------------------------------------------
   ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
