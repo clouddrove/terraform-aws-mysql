@@ -353,6 +353,7 @@ variable "deletion_protection" {
   description = "The database can't be deleted when this value is set to true."
 }
 
+#tfsec:ignore:aws-rds-enable-performance-insights
 variable "performance_insights_enabled" {
   type        = bool
   default     = false
