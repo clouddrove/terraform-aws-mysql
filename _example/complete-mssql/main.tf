@@ -1,7 +1,13 @@
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 provider "aws" {
   region = "ap-south-1"
 }
 
+####----------------------------------------------------------------------------------
+## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
+####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "1.3.1"
@@ -9,10 +15,12 @@ module "vpc" {
   name        = "vpc"
   environment = "test"
   label_order = ["environment", "name"]
-
-  cidr_block = "10.0.0.0/16"
+  cidr_block  = "10.0.0.0/16"
 }
 
+####----------------------------------------------------------------------------------
+## A subnet is a range of IP addresses in your VPC.
+####----------------------------------------------------------------------------------
 module "subnets" {
   source  = "clouddrove/subnet/aws"
   version = "1.3.0"
@@ -29,62 +37,57 @@ module "subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
-
-module "security_group" {
-  source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
-
-  name          = "security-group"
-  environment   = "test"
-  protocol      = "tcp"
-  label_order   = ["environment", "name"]
-  vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [1433]
-}
-
-
+####----------------------------------------------------------------------------------
+## relational database management system.
+####----------------------------------------------------------------------------------
 module "sqlserver" {
   source = "../../"
 
-  name        = "sg"
-  application = "clouddrove"
+  name        = "sqlserver"
   environment = "test"
   label_order = ["environment", "name"]
 
-  engine            = "sqlserver-ee"
-  engine_version    = "15.00.4153.1.v1"
-  instance_class    = "db.t3.small"
-  allocated_storage = 50
+  engine            = "sqlserver-se"
+  engine_version    = "15.00"
+  instance_class    = "db.t3.large"
+  engine_name       = "sqlserver-se"
+  allocated_storage = 20
   timezone          = "GMT Standard Time"
-
-  # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
+  license_model     = "license-included"
 
   # DB Details
-  database_name = ""
-  username      = "admin"
-  password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "1433"
+  db_name             = "mssql"
+  username            = "admin"
+  password            = "esfsgcGdfawAhdxtfjm!"
+  port                = "1433"
+  maintenance_window  = "Mon:00:00-Mon:03:00"
+  backup_window       = "03:00-06:00"
+  multi_az            = true
+  deletion_protection = true
 
-  vpc_security_group_ids = [module.security_group.security_group_ids]
-
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
-  multi_az           = false
-
+  ####----------------------------------------------------------------------------------
+  ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
+  ####----------------------------------------------------------------------------------
+  vpc_id        = module.vpc.vpc_id
+  allowed_ip    = [module.vpc.vpc_cidr_block]
+  allowed_ports = [1433]
 
   # disable backups to create DB faster
-  backup_retention_period = 0
+  backup_retention_period = 7
 
-  # enabled_cloudwatch_logs_exports = ["audit", "general"]
+  enabled_cloudwatch_logs_exports = ["error"]
+  enabled_cloudwatch_log_group    = false
 
   # DB subnet group
   subnet_ids          = module.subnets.private_subnet_id
   publicly_accessible = false
 
   # DB parameter group
-  family = "sqlserver-ee-15.0"
+  family = "sqlserver-se-15.0"
 
   # DB option group
   major_engine_version = "15.00"
+
+  ###ssm parameter
+  ssm_parameter_endpoint_enabled = true
 }

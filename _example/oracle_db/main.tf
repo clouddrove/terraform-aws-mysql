@@ -1,7 +1,13 @@
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 provider "aws" {
   region = "ap-south-1"
 }
 
+####----------------------------------------------------------------------------------
+## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
+####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "1.3.1"
@@ -13,6 +19,9 @@ module "vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
+####----------------------------------------------------------------------------------
+## A subnet is a range of IP addresses in your VPC.
+####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "1.3.0"
@@ -32,47 +41,39 @@ module "private_subnets" {
   assign_ipv6_address_on_creation = false
 }
 
-
-module "security_group" {
-  source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
-
-  name          = "security-group"
-  environment   = "test"
-  protocol      = "tcp"
-  label_order   = ["environment", "name"]
-  vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [1521]
-}
-
+####----------------------------------------------------------------------------------
+## relational database management system.
+####----------------------------------------------------------------------------------
 module "oracle" {
   source = "../../"
 
-  name        = "sg"
-  application = "clouddrove"
+  name        = "oracle"
   environment = "test"
   label_order = ["environment", "name"]
 
-  engine            = "oracle-se2"
-  engine_version    = "19.0.0.0.ru-2021-10.rur-2021-10.r1"
+  engine            = "oracle-ee"
+  engine_version    = "19"
   instance_class    = "db.t3.medium"
+  engine_name       = "oracle-ee"
   allocated_storage = 50
   storage_encrypted = true
-  # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
-  family = "oracle-se2-19"
+  family            = "oracle-ee-19"
   # DB Details
-  database_name = "test"
-  username      = "admin"
-  password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "1521"
-
-  vpc_security_group_ids = [module.security_group.security_group_ids]
+  db_name  = "test"
+  username = "admin"
+  password = "esfsgcGdfawAhdxtfjm!"
+  port     = "1521"
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
   multi_az           = false
 
+  ####----------------------------------------------------------------------------------
+  ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
+  ####----------------------------------------------------------------------------------
+  vpc_id        = module.vpc.vpc_id
+  allowed_ip    = [module.vpc.vpc_cidr_block]
+  allowed_ports = [1521]
 
   # disable backups to create DB faster
   backup_retention_period = 0
@@ -85,9 +86,10 @@ module "oracle" {
   # DB option group
   major_engine_version = "19"
 
-  # Snapshot name upon DB deletion
-
   # Database Deletion Protection
-  deletion_protection = false
+  deletion_protection = true
+
+  ###ssm parameter
+  ssm_parameter_endpoint_enabled = true
 
 }

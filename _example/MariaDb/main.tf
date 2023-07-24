@@ -1,7 +1,13 @@
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
 provider "aws" {
   region = "ap-south-1"
 }
 
+####----------------------------------------------------------------------------------
+## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
+####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "1.3.1"
@@ -13,6 +19,9 @@ module "vpc" {
   cidr_block = "10.0.0.0/16"
 }
 
+####----------------------------------------------------------------------------------
+## A subnet is a range of IP addresses in your VPC.
+####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "1.3.0"
@@ -29,46 +38,38 @@ module "private_subnets" {
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 }
 
-module "security_group" {
-  source  = "clouddrove/security-group/aws"
-  version = "1.3.0"
-
-  name          = "security-group"
-  environment   = "test"
-  protocol      = "tcp"
-  label_order   = ["environment", "name"]
-  vpc_id        = module.vpc.vpc_id
-  allowed_ip    = ["0.0.0.0/0"]
-  allowed_ports = [3306]
-}
-
-
+####----------------------------------------------------------------------------------
+## relational database management system.
+####----------------------------------------------------------------------------------
 module "mariadb" {
   source = "../../"
 
-  name        = "sg"
-  application = "clouddrove"
+  name        = "mariadb"
   environment = "test"
   label_order = ["environment", "name"]
 
-  engine            = "mariadb"
-  engine_version    = "10.6.7"
-  instance_class    = "db.t2.small"
+  engine            = "MariaDB"
+  engine_version    = "10.6.10"
+  instance_class    = "db.m5.large"
+  engine_name       = "MariaDB"
   allocated_storage = 50
 
-  # kms_key_id        = "arm:aws:kms:<region>:<accound id>:key/<kms key id>"
-
   # DB Details
-  database_name = "test"
-  username      = "user"
-  password      = "esfsgcGdfawAhdxtfjm!"
-  port          = "3306"
-
-  vpc_security_group_ids = [module.security_group.security_group_ids]
+  db_name  = "test"
+  username = "user"
+  password = "esfsgcGdfawAhdxtfjm!"
+  port     = "3306"
 
   maintenance_window = "Mon:00:00-Mon:03:00"
   backup_window      = "03:00-06:00"
   multi_az           = false
+
+  ####----------------------------------------------------------------------------------
+  ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
+  ####----------------------------------------------------------------------------------
+  vpc_id        = module.vpc.vpc_id
+  allowed_ip    = [module.vpc.vpc_cidr_block]
+  allowed_ports = [3306]
 
   family = "mariadb10.6"
   # disable backups to create DB faster
@@ -80,13 +81,12 @@ module "mariadb" {
   subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
 
-  # DB parameter group
-
   # DB option group
   major_engine_version = "10.6"
 
-  # Snapshot name upon DB deletion
-
   # Database Deletion Protection
-  deletion_protection = false
+  deletion_protection = true
+
+  ###ssm parameter
+  ssm_parameter_endpoint_enabled = true
 }

@@ -5,73 +5,104 @@
 
 version: 2
 updates:
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    open-pull-requests-limit: 3
+    assignees:
+      - "clouddrove-ci"
+    reviewers:
+      - "approvers"
+
   - package-ecosystem: "terraform" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_example/complete-mssql" # Location of package manifests
+    directory: "/_example/MariaDb" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_example/complete-mysql" # Location of package manifests
+    directory: "/_example/PostgreSQL" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_example/MariaDb" # Location of package manifests
+    directory: "/_example/complete-mssql" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_examples/oracle_db" # Location of package manifests
+    directory: "/_example/complete-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_example/PostgreSQL" # Location of package manifests
+    directory: "/_example/oracle_db" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
+
   - package-ecosystem: "terraform" # See documentation for possible values
-    directory: "_example/replica-mysql" # Location of package manifests
+    directory: "/_example/replica-mysql" # Location of package manifests
     schedule:
       interval: "weekly"
-      # Add assignees
+    # Add assignees
     assignees:
       - "clouddrove-ci"
-      # Add reviewer
+    # Add reviewer
     reviewers:
       - "approvers"
+    # Allow up to 3 open pull requests for pip dependencies
+    open-pull-requests-limit: 3
