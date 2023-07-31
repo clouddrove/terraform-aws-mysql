@@ -23,10 +23,8 @@ locals {
   monitoring_role_arn = var.enabled_monitoring_role ? aws_iam_role.enhanced_monitoring[0].arn : var.monitoring_role_arn
 
   final_snapshot_identifier = var.skip_final_snapshot ? null : "${var.final_snapshot_identifier_prefix}-${var.identifier}-${try(random_id.snapshot_identifier[0].hex, "")}"
-
   identifier        = var.use_identifier_prefix ? null : var.identifier
   identifier_prefix = var.use_identifier_prefix ? "${var.identifier}-" : null
-
   monitoring_role_name        = var.monitoring_role_use_name_prefix ? null : var.monitoring_role_name
   monitoring_role_name_prefix = var.monitoring_role_use_name_prefix ? "${var.monitoring_role_name}-" : null
   db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this.*.id) : var.db_subnet_group_name
@@ -36,10 +34,8 @@ locals {
   password       = var.password == "" ? join("", random_id.password.*.b64_url) : var.password
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
-
   name = var.use_name_prefix ? null : var.name
   //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
-
   description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
@@ -61,7 +57,6 @@ resource "aws_db_subnet_group" "this" {
   name        = module.labels.id
   description = local.description
   subnet_ids  = var.subnet_ids
-
   tags = merge(
     module.labels.tags,
     var.db_subnet_group_tags
@@ -77,7 +72,6 @@ resource "aws_db_parameter_group" "this" {
   name        = module.labels.id
   description = local.description
   family      = var.family
-
   dynamic "parameter" {
     for_each = var.parameters
     content {
@@ -86,7 +80,6 @@ resource "aws_db_parameter_group" "this" {
       apply_method = lookup(parameter.value, "apply_method", null)
     }
   }
-
   tags = merge(
     module.labels.tags,
     var.db_parameter_group_tags,
@@ -109,7 +102,6 @@ resource "aws_db_option_group" "this" {
   option_group_description = local.description
   engine_name              = var.engine_name
   major_engine_version     = var.major_engine_version
-
   dynamic "option" {
     for_each = var.options
     content {
@@ -118,7 +110,6 @@ resource "aws_db_option_group" "this" {
       version                        = lookup(option.value, "version", null)
       db_security_group_memberships  = lookup(option.value, "db_security_group_memberships", null)
       vpc_security_group_memberships = lookup(option.value, "vpc_security_group_memberships", null)
-
       dynamic "option_settings" {
         for_each = lookup(option.value, "option_settings", [])
         content {
