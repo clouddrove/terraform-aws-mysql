@@ -20,15 +20,15 @@ resource "random_id" "password" {
 }
 
 locals {
-  identifier_prefix           = var.use_identifier_prefix ? "${var.identifier}-" : null
-  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
+  identifier_prefix    = var.use_identifier_prefix ? "${var.identifier}-" : null
+  db_subnet_group_name = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
   password       = var.password == "" ? join("", random_id.password[*].b64_url) : var.password
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
-  description = coalesce(var.option_group_description, format("%s option group", var.name))
+  description    = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
 resource "random_id" "snapshot_identifier" {
