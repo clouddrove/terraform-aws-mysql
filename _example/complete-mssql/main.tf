@@ -43,26 +43,28 @@ module "subnets" {
 module "sqlserver" {
   source = "../../"
 
-  name        = "sqlserver"
-  environment = "test"
+  name        = "sqlserve"
+  environment = "testss"
   label_order = ["environment", "name"]
 
-  engine            = "sqlserver-se"
+  engine            = "sqlserver-ex"
   engine_version    = "15.00"
   instance_class    = "db.t3.large"
-  engine_name       = "sqlserver-se"
+  engine_name       = "sqlserver-ex"
+  family            = "sqlserver-ex-15.0"
   allocated_storage = 20
   timezone          = "GMT Standard Time"
   license_model     = "license-included"
-
+  iam_database_authentication_enabled = false
   # DB Details
-  db_name             = "mssql"
   username            = "admin"
+  storage_encrypted   = false
+  kms_key_enabled     = false
   password            = "esfsgcGdfawAhdxtfjm!"
   port                = "1433"
   maintenance_window  = "Mon:00:00-Mon:03:00"
   backup_window       = "03:00-06:00"
-  multi_az            = true
+  multi_az            = false
   deletion_protection = true
 
   ####----------------------------------------------------------------------------------
@@ -81,9 +83,6 @@ module "sqlserver" {
   # DB subnet group
   subnet_ids          = module.subnets.private_subnet_id
   publicly_accessible = false
-
-  # DB parameter group
-  family = "sqlserver-se-15.0"
 
   # DB option group
   major_engine_version = "15.00"

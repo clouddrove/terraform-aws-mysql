@@ -31,7 +31,7 @@ variable "attributes" {
 }
 variable "managedby" {
   type        = string
-  default     = "ctr.anmol.nagpal@prth.com"
+  default     = "anmol@clouddrove.com"
   description = "ManagedBy, eg 'pps'."
 }
 
