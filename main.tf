@@ -35,7 +35,6 @@ locals {
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
   name           = var.use_name_prefix ? null : var.name
-  //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
   description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
@@ -50,7 +49,7 @@ resource "random_id" "snapshot_identifier" {
 }
 
 ####----------------------------------------------------------------------------------
-### a collection of subnets (typically private) that you create for a VPC and that you then designate for your DB instances.
+### Provides an RDS DB subnet group resource..
 ####----------------------------------------------------------------------------------
 resource "aws_db_subnet_group" "this" {
   count       = var.enabled && var.enabled_db_subnet_group ? 1 : 0
@@ -64,7 +63,7 @@ resource "aws_db_subnet_group" "this" {
 }
 
 ####----------------------------------------------------------------------------------
-### Provides an RDS DB parameter group resource.
+### Provides an RDS DB parameter group resource. Documentation of the available parameters for various RDS engines can be found at.
 ####----------------------------------------------------------------------------------
 resource "aws_db_parameter_group" "this" {
   count = var.enabled ? 1 : 0
@@ -93,7 +92,7 @@ resource "aws_db_parameter_group" "this" {
 }
 
 ####----------------------------------------------------------------------------------
-### Provides an RDS DB option group resource.
+### Provides an RDS DB option group resource. Documentation of the available options for various RDS engines can be found at.
 ####----------------------------------------------------------------------------------
 resource "aws_db_option_group" "this" {
   count = var.enabled ? 1 : 0
@@ -138,9 +137,9 @@ resource "aws_db_option_group" "this" {
 }
 
 
-##------------------------------------------------------------------------------
-### CloudWatch Log Group
-##------------------------------------------------------------------------------
+####------------------------------------------------------------------------------
+## Provides a CloudWatch Log Group resource.
+####------------------------------------------------------------------------------
 resource "aws_cloudwatch_log_group" "this" {
   for_each = toset([for log in var.enabled_cloudwatch_logs_exports : log if var.enabled && var.enabled_cloudwatch_log_group && !var.use_identifier_prefix])
 
@@ -154,9 +153,9 @@ resource "aws_cloudwatch_log_group" "this" {
   )
 }
 
-##-----------------------------------------------------------------------------------
-### Generates an IAM policy document in JSON format for use with resources that expect policy documents such as aws_iam_policy.
-##-----------------------------------------------------------------------------------
+####-----------------------------------------------------------------------------------
+## Generates an IAM policy document in JSON format for use with resources that expect policy documents such as aws_iam_policy.
+####-----------------------------------------------------------------------------------
 
 data "aws_iam_policy_document" "enhanced_monitoring" {
   statement {
@@ -172,7 +171,6 @@ data "aws_iam_policy_document" "enhanced_monitoring" {
 }
 
 ####----------------------------------------------------------------------------------
-### IAM - Manage Roles
 ### AWS Identity and Access Management (IAM) roles are entities you create and assign specific permissions to that allow trusted identities such as workforce identities and applications to perform actions in AWS
 ####----------------------------------------------------------------------------------
 resource "aws_iam_role" "enhanced_monitoring" {
@@ -192,6 +190,9 @@ resource "aws_iam_role" "enhanced_monitoring" {
   )
 }
 
+####----------------------------------------------------------------------------------
+### Attaches a Managed IAM Policy to an IAM group
+####----------------------------------------------------------------------------------
 resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
   count = var.enabled_monitoring_role ? 1 : 0
 
@@ -199,9 +200,9 @@ resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
   policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
 }
 
-##----------------------------------------------------------------------------------
+###----------------------------------------------------------------------------------
 ## Below resources will create SECURITY-GROUP and its components.
-##----------------------------------------------------------------------------------
+###----------------------------------------------------------------------------------
 resource "aws_security_group" "default" {
   count = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
 
@@ -220,9 +221,9 @@ data "aws_security_group" "existing" {
   vpc_id = var.vpc_id
 }
 
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 ## Below resources will create SECURITY-GROUP-RULE and its components.
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
   count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
@@ -260,9 +261,9 @@ resource "aws_security_group_rule" "ingress" {
   security_group_id = join("", aws_security_group.default.*.id)
 }
 
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 ## Below resources will create KMS-KEY and its components.
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 resource "aws_kms_key" "default" {
   count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
@@ -277,6 +278,9 @@ resource "aws_kms_key" "default" {
   tags                     = module.labels.tags
 }
 
+####----------------------------------------------------------------------------------
+## Provides an alias for a KMS customer master key. AWS Console enforces 1-to-1 mapping between aliases & keys, but API (hence Terraform too) allows you to create as many aliases as the account limits allow you.
+####----------------------------------------------------------------------------------
 resource "aws_kms_alias" "default" {
   count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
@@ -284,9 +288,9 @@ resource "aws_kms_alias" "default" {
   target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default.*.id) : var.kms_key_id
 }
 
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 ## Data block called to get Permissions that will be used in creating policy.
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 data "aws_partition" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_iam_policy_document" "default" {
@@ -310,7 +314,7 @@ data "aws_iam_policy_document" "default" {
 }
 
 ####----------------------------------------------------------------------------------
-### A database instance is a set of memory structures that manage database files.
+## A database instance is a set of memory structures that manage database files.
 ####----------------------------------------------------------------------------------
 #tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "this" {
@@ -427,7 +431,7 @@ resource "aws_db_instance" "this" {
 }
 
 ####----------------------------------------------------------------------------------
-### mysql replication
+## mysql replication
 ####----------------------------------------------------------------------------------
 #tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "read" {
@@ -543,9 +547,9 @@ resource "aws_db_instance" "read" {
   }
 }
 
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 ## Below resource will create ssm-parameter resource for mysql with endpoint.
-##----------------------------------------------------------------------------------
+####----------------------------------------------------------------------------------
 resource "aws_ssm_parameter" "secret-endpoint" {
   count = var.enabled && var.ssm_parameter_endpoint_enabled ? 1 : 0
 
