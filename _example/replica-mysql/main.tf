@@ -8,7 +8,6 @@ module "vpc" {
 
   name        = "vpc"
   environment = "test"
-  label_order = ["environment", "name"]
 
   cidr_block = "10.0.0.0/16"
 }
@@ -19,7 +18,6 @@ module "subnets" {
 
   name        = "subnets"
   environment = "test"
-  label_order = ["environment", "name"]
 
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -34,7 +32,6 @@ module "mysql" {
 
   name                   = "rds"
   environment            = "test"
-  label_order            = ["environment", "name"]
   enabled                = true
   engine                 = "mysql"
   engine_version         = "8.0"

@@ -14,7 +14,6 @@ module "vpc" {
 
   name        = "vpc"
   environment = "test"
-  label_order = ["environment", "name"]
 
   cidr_block = "10.0.0.0/16"
 }
@@ -28,7 +27,6 @@ module "private_subnets" {
 
   name        = "subnets"
   environment = "test"
-  label_order = ["name", "environment"]
 
   nat_gateway_enabled = true
 
@@ -49,7 +47,6 @@ module "oracle" {
 
   name        = "oracle"
   environment = "test"
-  label_order = ["environment", "name"]
 
   engine            = "oracle-ee"
   engine_version    = "19"

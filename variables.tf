@@ -12,23 +12,12 @@ variable "environment" {
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
-variable "extra_tags" {
-  type        = map(string)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
-}
-
 variable "label_order" {
   type        = list(any)
-  default     = []
+  default     = ["environment", "name"]
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "attributes" {
-  type        = list(any)
-  default     = []
-  description = "Additional attributes (e.g. `1`)."
-}
 variable "managedby" {
   type        = string
   default     = "anmol@clouddrove.com"
@@ -39,12 +28,6 @@ variable "delimiter" {
   type        = string
   default     = "-"
   description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
-variable "tags" {
-  type        = map(any)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 variable "enabled" {
@@ -209,12 +192,6 @@ variable "db_subnet_group_name" {
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
 }
 
-variable "parameter_group_name" {
-  type        = string
-  default     = null
-  description = "Name of the DB parameter group to associate"
-}
-
 variable "availability_zone" {
   description = "The Availability Zone of the RDS instance"
   type        = string
@@ -323,12 +300,6 @@ variable "backup_window" {
   description = "The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance_window"
 }
 
-variable "option_group_name" {
-  type        = string
-  default     = null
-  description = "Name of the DB option group to associate."
-}
-
 variable "timezone" {
   type        = string
   default     = null
@@ -424,30 +395,6 @@ variable "cloudwatch_log_group_retention_in_days" {
   description = "The number of days to retain CloudWatch logs for the DB instance"
 }
 
-variable "cloudwatch_log_group_kms_key_id" {
-  type        = string
-  default     = null
-  description = "The ARN of the KMS Key to use when encrypting log data"
-}
-
-variable "pre_signed_url" {
-  type        = string
-  default     = null
-  description = "A URL that contains a Signature Version 4 signed request for the StartDBInstanceAutomatedBackupsReplication action to be called in the AWS Region of the source DB instance"
-}
-
-variable "retention_period" {
-  type        = number
-  default     = 0
-  description = "The retention period for the replicated automated backups"
-}
-
-variable "source_db_instance_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the source DB instance for the replicated automated backups"
-}
-
 variable "use_name_prefix" {
   type        = bool
   default     = false
@@ -484,11 +431,6 @@ variable "timeouts" {
   description = "Define maximum timeout for deletion of `aws_db_option_group` resource"
 }
 
-variable "description" {
-  type        = string
-  default     = null
-  description = "The description of the DB parameter group"
-}
 
 variable "family" {
   type        = string
@@ -709,12 +651,6 @@ variable "alias" {
   description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
 }
 
-variable "auth_token" {
-  type        = string
-  default     = null
-  description = "The password used to access a password protected server. Can be specified only if transit_encryption_enabled = true."
-}
-
 variable "ssm_parameter_description" {
   type        = string
   default     = "Description of the parameter."
@@ -731,10 +667,4 @@ variable "ssm_parameter_endpoint_enabled" {
   type        = bool
   default     = false
   description = "Name of the parameter."
-}
-
-variable "automatic_failover_enabled" {
-  type        = bool
-  default     = true
-  description = "Specifies whether a read-only replica will be automatically promoted to read/write primary if the existing primary fails. If true, Multi-AZ is enabled for this replication group. If false, Multi-AZ is disabled for this replication group. Must be enabled for Redis (cluster mode enabled) replication groups. Defaults to false."
 }

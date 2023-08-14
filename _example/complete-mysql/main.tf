@@ -14,7 +14,6 @@ module "vpc" {
 
   name        = "vpc"
   environment = "test"
-  label_order = ["environment", "name"]
   cidr_block  = "10.0.0.0/16"
 }
 
@@ -27,7 +26,6 @@ module "subnets" {
 
   name        = "subnets"
   environment = "test"
-  label_order = ["environment", "name"]
 
   availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
@@ -45,7 +43,6 @@ module "mysql" {
 
   name        = "mysql"
   environment = "test"
-  label_order = ["environment", "name"]
 
   engine            = "mysql"
   engine_version    = "8.0.28"
