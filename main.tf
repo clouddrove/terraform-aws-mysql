@@ -35,7 +35,7 @@ locals {
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
   name           = var.use_name_prefix ? null : var.name
-  description = coalesce(var.option_group_description, format("%s option group", var.name))
+  description    = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
 resource "random_id" "snapshot_identifier" {

@@ -44,14 +44,14 @@ module "sqlserver" {
   name        = "sqlserve"
   environment = "testss"
 
-  engine            = "sqlserver-ex"
-  engine_version    = "15.00"
-  instance_class    = "db.t3.large"
-  engine_name       = "sqlserver-ex"
-  family            = "sqlserver-ex-15.0"
-  allocated_storage = 20
-  timezone          = "GMT Standard Time"
-  license_model     = "license-included"
+  engine                              = "sqlserver-ex"
+  engine_version                      = "15.00"
+  instance_class                      = "db.t3.large"
+  engine_name                         = "sqlserver-ex"
+  family                              = "sqlserver-ex-15.0"
+  allocated_storage                   = 20
+  timezone                            = "GMT Standard Time"
+  license_model                       = "license-included"
   iam_database_authentication_enabled = false
   # DB Details
   username            = "admin"
