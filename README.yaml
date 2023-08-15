@@ -24,7 +24,9 @@ badges:
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
-
+prerequesties:
+  - name: Terraform 1.5.3
+    url: https://learn.hashicorp.com/terraform/getting-started/install.html
 #  description of this project
 description: |-
   Terraform module which creates RDS Aurora database resources on AWS and can create different type of databases. Currently it supports MySQL.

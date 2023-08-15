@@ -23,11 +23,9 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "1.3.0"
+  version = "2.0.0"
 
   name        = "subnets"
-  environment = "test"
-
   availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public-private"
