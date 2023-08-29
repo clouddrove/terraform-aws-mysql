@@ -5,6 +5,11 @@ provider "aws" {
   region = "ap-south-1"
 }
 
+locals {
+  environment = "test"
+  name        = "vpc"
+}
+
 ####----------------------------------------------------------------------------------
 ## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
 ####----------------------------------------------------------------------------------
@@ -12,24 +17,27 @@ module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name        = "vpc"
-  environment = "test"
-  cidr_block  = "10.0.0.0/16"
+  name        = local.name
+  environment = local.environment
+
+  cidr_block = "10.0.0.0/16"
 }
 
 ####----------------------------------------------------------------------------------
 ## A subnet is a range of IP addresses in your VPC.
 ####----------------------------------------------------------------------------------
-module "subnets" {
+module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
 
-  name        = "subnets"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
+
+  nat_gateway_enabled = true
 
   availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
-  type               = "public"
+  type               = "public-private"
   igw_id             = module.vpc.igw_id
   cidr_block         = module.vpc.vpc_cidr_block
   ipv6_cidr_block    = module.vpc.ipv6_cidr_block
@@ -38,78 +46,51 @@ module "subnets" {
 ####----------------------------------------------------------------------------------
 ## relational database management system.
 ####----------------------------------------------------------------------------------
-module "mysql" {
+module "oracle" {
   source = "../../"
 
-  name        = "mysql"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
-  engine            = "mysql"
-  engine_version    = "8.0.28"
-  instance_class    = "db.t2.small"
-  allocated_storage = 5
+  engine            = "oracle-ee"
+  engine_version    = "19"
+  instance_class    = "db.t3.medium"
+  engine_name       = "oracle-ee"
+  allocated_storage = 50
+  storage_encrypted = true
+  family            = "oracle-ee-19"
+  # DB Details
+  db_name  = "test"
+  username = "admin"
+  password = "esfsgcGdfawAhdxtfjm!"
+  port     = "1521"
+
+  maintenance_window = "Mon:00:00-Mon:03:00"
+  backup_window      = "03:00-06:00"
+  multi_az           = false
 
   ####----------------------------------------------------------------------------------
   ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
   ####----------------------------------------------------------------------------------
   vpc_id        = module.vpc.vpc_id
   allowed_ip    = [module.vpc.vpc_cidr_block]
-  allowed_ports = [3306]
-
-  # DB Details
-  db_name  = "test"
-  username = "user"
-  password = "esfsgcGdfawAhdxtfjm!"
-  port     = "3306"
-
-  maintenance_window = "Mon:00:00-Mon:03:00"
-  backup_window      = "03:00-06:00"
-  multi_az           = false
+  allowed_ports = [1521]
 
   # disable backups to create DB faster
-  backup_retention_period = 7
+  backup_retention_period = 0
 
-  enabled_cloudwatch_logs_exports = ["audit", "general"]
+  enabled_cloudwatch_logs_exports = ["audit"]
 
   # DB subnet group
-  subnet_ids          = module.subnets.public_subnet_id
+  subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
-
-  # DB parameter group
-  family = "mysql8.0"
-
   # DB option group
-  major_engine_version = "8.0"
+  major_engine_version = "19"
 
   # Database Deletion Protection
   deletion_protection = true
 
-  parameters = [
-    {
-      name  = "character_set_client"
-      value = "utf8"
-    },
-    {
-      name  = "character_set_server"
-      value = "utf8"
-    }
-  ]
-
-  options = [
-    {
-      option_name = "MARIADB_AUDIT_PLUGIN"
-
-      option_settings = [
-        {
-          name  = "SERVER_AUDIT_EVENTS"
-          value = "CONNECT"
-        },
-        {
-          name  = "SERVER_AUDIT_FILE_ROTATIONS"
-          value = "37"
-        },
-      ]
-    },
-  ]
+  ###ssm parameter
   ssm_parameter_endpoint_enabled = true
+
 }

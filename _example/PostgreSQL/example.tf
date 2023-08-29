@@ -5,6 +5,11 @@ provider "aws" {
   region = "ap-south-1"
 }
 
+locals {
+  environment = "test"
+  name        = "vpc"
+}
+
 ####----------------------------------------------------------------------------------
 ## A VPC is a virtual network that closely resembles a traditional network that you'd operate in your own data center.
 ####----------------------------------------------------------------------------------
@@ -12,8 +17,8 @@ module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name        = "vpc"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
   cidr_block = "10.0.0.0/16"
 }
@@ -25,8 +30,8 @@ module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
 
-  name        = "subnets"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
   nat_gateway_enabled = true
 
@@ -44,8 +49,8 @@ module "private_subnets" {
 module "postgresql" {
   source = "../../"
 
-  name        = "postgresql"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
   engine            = "postgres"
   engine_version    = "14.6"

@@ -152,7 +152,7 @@ variable "username" {
 
 variable "password" {
   type        = string
-  default     = null
+  default     = ""
   description = "Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file"
 }
 

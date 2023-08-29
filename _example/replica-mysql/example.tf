@@ -2,12 +2,17 @@ provider "aws" {
   region = "eu-west-1"
 }
 
+locals {
+  environment = "test"
+  name        = "vpc"
+}
+
 module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name        = "vpc"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
   cidr_block = "10.0.0.0/16"
 }
@@ -16,8 +21,8 @@ module "subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.0"
 
-  name        = "subnets"
-  environment = "test"
+  name        = local.name
+  environment = local.environment
 
   availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
   vpc_id             = module.vpc.vpc_id
@@ -30,8 +35,8 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name                   = "rds"
-  environment            = "test"
+  name        = local.name
+  environment = local.environment
   enabled                = true
   engine                 = "mysql"
   engine_version         = "8.0"
