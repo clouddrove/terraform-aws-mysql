@@ -27,7 +27,7 @@ locals {
   identifier_prefix           = var.use_identifier_prefix ? "${var.identifier}-" : null
   monitoring_role_name        = var.monitoring_role_use_name_prefix ? null : var.monitoring_role_name
   monitoring_role_name_prefix = var.monitoring_role_use_name_prefix ? "${var.monitoring_role_name}-" : null
-  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this.*.id) : var.db_subnet_group_name
+  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this.[*].id) : var.db_subnet_group_name
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
