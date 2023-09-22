@@ -32,12 +32,12 @@ module "private_subnets" {
 
   nat_gateway_enabled = true
 
-  availability_zones              = ["ap-south-1a", "ap-south-1b"]
-  vpc_id                          = module.vpc.vpc_id
-  type                            = "public-private"
-  igw_id                          = module.vpc.igw_id
-  cidr_block                      = module.vpc.vpc_cidr_block
-  ipv6_cidr_block                 = module.vpc.ipv6_cidr_block
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  vpc_id             = module.vpc.vpc_id
+  type               = "public-private"
+  igw_id             = module.vpc.igw_id
+  cidr_block         = module.vpc.vpc_cidr_block
+  ipv6_cidr_block    = module.vpc.ipv6_cidr_block
 
 }
 
