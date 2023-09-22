@@ -38,6 +38,7 @@ module "private_subnets" {
   igw_id                          = module.vpc.igw_id
   cidr_block                      = module.vpc.vpc_cidr_block
   ipv6_cidr_block                 = module.vpc.ipv6_cidr_block
+
 }
 
 ####----------------------------------------------------------------------------------
