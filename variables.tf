@@ -216,6 +216,12 @@ variable "monitoring_interval" {
   description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
 }
 
+variable "monitoring_role_name" {
+  type        = string
+  default     = "rds-monitoring-role"
+  description = "Name of the IAM role which will be created when create_monitoring_role is enabled."
+}
+
 variable "monitoring_role_arn" {
   type        = string
   default     = null
