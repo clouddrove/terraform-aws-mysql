@@ -31,7 +31,7 @@ locals {
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
-  password       = var.password == "" ? join("", random_id.password.*.b64_url) : var.password
+  password       = var.password == "" ? join("", random_id.password[*].b64_url) : var.password
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
   name           = var.use_name_prefix ? null : var.name
@@ -146,7 +146,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
   name              = "/aws/rds/instance/${module.labels.id}/${each.value}"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
 
   tags = merge(
     module.labels.tags,
