@@ -29,7 +29,6 @@ locals {
   password       = var.password == "" ? join("", random_id.password[*].b64_url) : var.password
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
-  name           = var.use_name_prefix ? null : var.name
   //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
   description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
@@ -207,12 +206,6 @@ resource "aws_security_group" "default" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-data "aws_security_group" "existing" {
-  count  = var.is_external ? 1 : 0
-  id     = var.existing_sg_id
-  vpc_id = var.vpc_id
 }
 
 ##----------------------------------------------------------------------------------
