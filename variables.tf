@@ -383,12 +383,6 @@ variable "cloudwatch_log_group_retention_in_days" {
   description = "The number of days to retain CloudWatch logs for the DB instance"
 }
 
-variable "use_name_prefix" {
-  type        = bool
-  default     = false
-  description = "Determines whether to use `name` as is or create a unique name beginning with `name` as the specified prefix"
-}
-
 variable "option_group_description" {
   type        = string
   default     = null
@@ -532,12 +526,6 @@ variable "is_external" {
   type        = bool
   default     = false
   description = "enable to udated existing security Group"
-}
-
-variable "existing_sg_id" {
-  type        = string
-  default     = null
-  description = "Provide existing security group id for updating existing rule"
 }
 
 variable "egress_rule" {
