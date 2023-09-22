@@ -383,12 +383,6 @@ variable "cloudwatch_log_group_retention_in_days" {
   description = "The number of days to retain CloudWatch logs for the DB instance"
 }
 
-variable "source_db_instance_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the source DB instance for the replicated automated backups"
-}
-
 variable "use_name_prefix" {
   type        = bool
   default     = false
