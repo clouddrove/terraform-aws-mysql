@@ -180,12 +180,6 @@ variable "copy_tags_to_snapshot" {
   description = "On delete, copy all Instance tags to the final snapshot"
 }
 
-variable "final_snapshot_identifier_prefix" {
-  type        = string
-  default     = "final"
-  description = "The name which is prefixed to the final snapshot on cluster destroy"
-}
-
 variable "db_subnet_group_name" {
   type        = string
   default     = ""
@@ -226,18 +220,6 @@ variable "monitoring_role_arn" {
   type        = string
   default     = null
   description = "The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring_interval is non-zero."
-}
-
-variable "monitoring_role_name" {
-  type        = string
-  default     = "rds-monitoring-role"
-  description = "Name of the IAM role which will be created when create_monitoring_role is enabled."
-}
-
-variable "monitoring_role_use_name_prefix" {
-  type        = bool
-  default     = false
-  description = "Determines whether to use `monitoring_role_name` as is or create a unique identifier beginning with `monitoring_role_name` as the specified prefix"
 }
 
 variable "monitoring_role_description" {
@@ -654,12 +636,6 @@ variable "alias" {
   type        = string
   default     = "alias/rds"
   description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
-}
-
-variable "auth_token" {
-  type        = string
-  default     = null
-  description = "The password used to access a password protected server. Can be specified only if transit_encryption_enabled = true."
 }
 
 variable "ssm_parameter_description" {
