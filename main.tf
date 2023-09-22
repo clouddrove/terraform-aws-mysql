@@ -378,7 +378,7 @@ resource "aws_db_instance" "this" {
   backup_window           = var.backup_window
   max_allocated_storage   = var.max_allocated_storage
   monitoring_interval     = var.monitoring_interval
-  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring[*].arn)
 
   character_set_name              = var.character_set_name
   timezone                        = var.timezone
@@ -442,7 +442,7 @@ resource "aws_db_instance" "read" {
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
   license_model     = var.license_model
 
   db_name                             = null
