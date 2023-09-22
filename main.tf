@@ -21,8 +21,8 @@ resource "random_id" "password" {
 
 locals {
 
-  identifier_prefix           = var.use_identifier_prefix ? "${var.identifier}-" : null
-  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
+  identifier_prefix    = var.use_identifier_prefix ? "${var.identifier}-" : null
+  db_subnet_group_name = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
