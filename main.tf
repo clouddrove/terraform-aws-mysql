@@ -325,7 +325,7 @@ resource "aws_db_instance" "this" {
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
   license_model     = var.license_model
 
   db_name                             = var.db_name
@@ -337,7 +337,7 @@ resource "aws_db_instance" "this" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   custom_iam_instance_profile         = var.custom_iam_instance_profile
 
-  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = local.db_subnet_group_name
   parameter_group_name   = join("", aws_db_parameter_group.this[*].name)
   option_group_name      = join("", aws_db_option_group.this[*].name)
@@ -454,10 +454,10 @@ resource "aws_db_instance" "read" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   custom_iam_instance_profile         = var.custom_iam_instance_profile
 
-  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = var.db_subnet_group_name
-  parameter_group_name   = join("", aws_db_instance.this.*.parameter_group_name)
-  option_group_name      = join("", aws_db_instance.this.*.option_group_name)
+  parameter_group_name   = join("", aws_db_instance.this[*].parameter_group_name)
+  option_group_name      = join("", aws_db_instance.this[*].option_group_name)
   network_type           = var.network_type
 
   availability_zone   = var.availability_zone
@@ -490,13 +490,13 @@ resource "aws_db_instance" "read" {
   performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
   performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
 
-  replicate_source_db     = join("", aws_db_instance.this.*.identifier)
+  replicate_source_db     = join("", aws_db_instance.this[*].identifier)
   replica_mode            = var.replica_mode
   backup_retention_period = length(var.blue_green_update) > 0 ? coalesce(var.backup_retention_period, 1) : var.backup_retention_period
   backup_window           = var.backup_window
   max_allocated_storage   = var.max_allocated_storage
   monitoring_interval     = var.monitoring_interval
-  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring[*].arn)
 
   character_set_name              = var.character_set_name
   timezone                        = var.timezone
