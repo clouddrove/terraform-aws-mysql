@@ -233,7 +233,7 @@ resource "aws_security_group_rule" "egress" {
   to_port           = 65535
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress_ipv6" {
@@ -245,7 +245,7 @@ resource "aws_security_group_rule" "egress_ipv6" {
   to_port           = 65535
   protocol          = "-1"
   ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 resource "aws_security_group_rule" "ingress" {
@@ -257,7 +257,7 @@ resource "aws_security_group_rule" "ingress" {
   to_port           = element(var.allowed_ports, count.index)
   protocol          = var.protocol
   cidr_blocks       = var.allowed_ip
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 ##----------------------------------------------------------------------------------
@@ -281,7 +281,7 @@ resource "aws_kms_alias" "default" {
   count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
   name          = coalesce(var.alias, format("alias/%v", module.labels.id))
-  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default.*.id) : var.kms_key_id
+  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default[*].id) : var.kms_key_id
 }
 
 ##----------------------------------------------------------------------------------
@@ -299,7 +299,7 @@ data "aws_iam_policy_document" "default" {
       identifiers = [
         format(
           "arn:%s:iam::%s:root",
-          join("", data.aws_partition.current.*.partition),
+          join("", data.aws_partition.current[*].partition),
           data.aws_caller_identity.current.account_id
         )
       ]
@@ -339,8 +339,8 @@ resource "aws_db_instance" "this" {
 
   vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
   db_subnet_group_name   = local.db_subnet_group_name
-  parameter_group_name   = join("", aws_db_parameter_group.this.*.name)
-  option_group_name      = join("", aws_db_option_group.this.*.name)
+  parameter_group_name   = join("", aws_db_parameter_group.this[*].name)
+  option_group_name      = join("", aws_db_option_group.this[*].name)
   network_type           = var.network_type
 
   availability_zone   = var.availability_zone
