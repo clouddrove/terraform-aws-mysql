@@ -20,21 +20,15 @@ resource "random_id" "password" {
 }
 
 locals {
-  monitoring_role_arn = var.enabled_monitoring_role ? aws_iam_role.enhanced_monitoring[0].arn : var.monitoring_role_arn
 
-  final_snapshot_identifier   = var.skip_final_snapshot ? null : "${var.final_snapshot_identifier_prefix}-${var.identifier}-${try(random_id.snapshot_identifier[0].hex, "")}"
-  identifier                  = var.use_identifier_prefix ? null : var.identifier
-  identifier_prefix           = var.use_identifier_prefix ? "${var.identifier}-" : null
-  monitoring_role_name        = var.monitoring_role_use_name_prefix ? null : var.monitoring_role_name
-  monitoring_role_name_prefix = var.monitoring_role_use_name_prefix ? "${var.monitoring_role_name}-" : null
-  db_subnet_group_name        = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this.*.id) : var.db_subnet_group_name
+  identifier_prefix    = var.use_identifier_prefix ? "${var.identifier}-" : null
+  db_subnet_group_name = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
-  password       = var.password == "" ? join("", random_id.password.*.b64_url) : var.password
+  password       = var.password == "" ? join("", random_id.password[*].b64_url) : var.password
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
-  name           = var.use_name_prefix ? null : var.name
   //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
   description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
@@ -146,7 +140,7 @@ resource "aws_cloudwatch_log_group" "this" {
 
   name              = "/aws/rds/instance/${module.labels.id}/${each.value}"
   retention_in_days = var.cloudwatch_log_group_retention_in_days
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
 
   tags = merge(
     module.labels.tags,
@@ -214,12 +208,6 @@ resource "aws_security_group" "default" {
   }
 }
 
-data "aws_security_group" "existing" {
-  count  = var.is_external ? 1 : 0
-  id     = var.existing_sg_id
-  vpc_id = var.vpc_id
-}
-
 ##----------------------------------------------------------------------------------
 ## Below resources will create SECURITY-GROUP-RULE and its components.
 ##----------------------------------------------------------------------------------
@@ -233,7 +221,7 @@ resource "aws_security_group_rule" "egress" {
   to_port           = 65535
   protocol          = "-1"
   cidr_blocks       = ["0.0.0.0/0"]
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress_ipv6" {
@@ -245,7 +233,7 @@ resource "aws_security_group_rule" "egress_ipv6" {
   to_port           = 65535
   protocol          = "-1"
   ipv6_cidr_blocks  = ["::/0"]
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 resource "aws_security_group_rule" "ingress" {
@@ -257,7 +245,7 @@ resource "aws_security_group_rule" "ingress" {
   to_port           = element(var.allowed_ports, count.index)
   protocol          = var.protocol
   cidr_blocks       = var.allowed_ip
-  security_group_id = join("", aws_security_group.default.*.id)
+  security_group_id = join("", aws_security_group.default[*].id)
 }
 
 ##----------------------------------------------------------------------------------
@@ -281,7 +269,7 @@ resource "aws_kms_alias" "default" {
   count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
   name          = coalesce(var.alias, format("alias/%v", module.labels.id))
-  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default.*.id) : var.kms_key_id
+  target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default[*].id) : var.kms_key_id
 }
 
 ##----------------------------------------------------------------------------------
@@ -299,7 +287,7 @@ data "aws_iam_policy_document" "default" {
       identifiers = [
         format(
           "arn:%s:iam::%s:root",
-          join("", data.aws_partition.current.*.partition),
+          join("", data.aws_partition.current[*].partition),
           data.aws_caller_identity.current.account_id
         )
       ]
@@ -325,7 +313,7 @@ resource "aws_db_instance" "this" {
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
   license_model     = var.license_model
 
   db_name                             = var.db_name
@@ -337,10 +325,10 @@ resource "aws_db_instance" "this" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   custom_iam_instance_profile         = var.custom_iam_instance_profile
 
-  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = local.db_subnet_group_name
-  parameter_group_name   = join("", aws_db_parameter_group.this.*.name)
-  option_group_name      = join("", aws_db_option_group.this.*.name)
+  parameter_group_name   = join("", aws_db_parameter_group.this[*].name)
+  option_group_name      = join("", aws_db_option_group.this[*].name)
   network_type           = var.network_type
 
   availability_zone   = var.availability_zone
@@ -378,7 +366,7 @@ resource "aws_db_instance" "this" {
   backup_window           = var.backup_window
   max_allocated_storage   = var.max_allocated_storage
   monitoring_interval     = var.monitoring_interval
-  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring[*].arn)
 
   character_set_name              = var.character_set_name
   timezone                        = var.timezone
@@ -442,7 +430,7 @@ resource "aws_db_instance" "read" {
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
-  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  kms_key_id        = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
   license_model     = var.license_model
 
   db_name                             = null
@@ -454,10 +442,10 @@ resource "aws_db_instance" "read" {
   iam_database_authentication_enabled = var.iam_database_authentication_enabled
   custom_iam_instance_profile         = var.custom_iam_instance_profile
 
-  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default.*.id : var.sg_ids
+  vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = var.db_subnet_group_name
-  parameter_group_name   = join("", aws_db_instance.this.*.parameter_group_name)
-  option_group_name      = join("", aws_db_instance.this.*.option_group_name)
+  parameter_group_name   = join("", aws_db_instance.this[*].parameter_group_name)
+  option_group_name      = join("", aws_db_instance.this[*].option_group_name)
   network_type           = var.network_type
 
   availability_zone   = var.availability_zone
@@ -490,13 +478,13 @@ resource "aws_db_instance" "read" {
   performance_insights_retention_period = var.performance_insights_enabled ? var.performance_insights_retention_period : null
   performance_insights_kms_key_id       = var.performance_insights_enabled ? var.performance_insights_kms_key_id : null
 
-  replicate_source_db     = join("", aws_db_instance.this.*.identifier)
+  replicate_source_db     = join("", aws_db_instance.this[*].identifier)
   replica_mode            = var.replica_mode
   backup_retention_period = length(var.blue_green_update) > 0 ? coalesce(var.backup_retention_period, 1) : var.backup_retention_period
   backup_window           = var.backup_window
   max_allocated_storage   = var.max_allocated_storage
   monitoring_interval     = var.monitoring_interval
-  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring.*.arn)
+  monitoring_role_arn     = join("", aws_iam_role.enhanced_monitoring[*].arn)
 
   character_set_name              = var.character_set_name
   timezone                        = var.timezone
@@ -552,6 +540,6 @@ resource "aws_ssm_parameter" "secret-endpoint" {
   name        = format("/%s/%s/endpoint", var.environment, var.name)
   description = var.ssm_parameter_description
   type        = var.ssm_parameter_type
-  value       = join("", aws_db_instance.this.*.endpoint)
-  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default.*.arn) : var.kms_key_id
+  value       = join("", aws_db_instance.this[*].endpoint)
+  key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
 }

@@ -12,23 +12,12 @@ variable "environment" {
   description = "Environment (e.g. `prod`, `dev`, `staging`)."
 }
 
-variable "extra_tags" {
-  type        = map(string)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
-}
-
 variable "label_order" {
   type        = list(any)
   default     = []
   description = "Label order, e.g. `name`,`application`."
 }
 
-variable "attributes" {
-  type        = list(any)
-  default     = []
-  description = "Additional attributes (e.g. `1`)."
-}
 variable "managedby" {
   type        = string
   default     = "ctr.anmol.nagpal@prth.com"
@@ -39,12 +28,6 @@ variable "delimiter" {
   type        = string
   default     = "-"
   description = "Delimiter to be used between `organization`, `environment`, `name` and `attributes`."
-}
-
-variable "tags" {
-  type        = map(any)
-  default     = {}
-  description = "Additional tags (e.g. map(`BusinessUnit`,`XYZ`)."
 }
 
 variable "enabled" {
@@ -197,22 +180,10 @@ variable "copy_tags_to_snapshot" {
   description = "On delete, copy all Instance tags to the final snapshot"
 }
 
-variable "final_snapshot_identifier_prefix" {
-  type        = string
-  default     = "final"
-  description = "The name which is prefixed to the final snapshot on cluster destroy"
-}
-
 variable "db_subnet_group_name" {
   type        = string
   default     = ""
   description = "Name of DB subnet group. DB instance will be created in the VPC associated with the DB subnet group. If unspecified, will be created in the default VPC"
-}
-
-variable "parameter_group_name" {
-  type        = string
-  default     = null
-  description = "Name of the DB parameter group to associate"
 }
 
 variable "availability_zone" {
@@ -245,22 +216,10 @@ variable "monitoring_interval" {
   description = "The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60."
 }
 
-variable "monitoring_role_arn" {
-  type        = string
-  default     = null
-  description = "The ARN for the IAM role that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. Must be specified if monitoring_interval is non-zero."
-}
-
 variable "monitoring_role_name" {
   type        = string
   default     = "rds-monitoring-role"
   description = "Name of the IAM role which will be created when create_monitoring_role is enabled."
-}
-
-variable "monitoring_role_use_name_prefix" {
-  type        = bool
-  default     = false
-  description = "Determines whether to use `monitoring_role_name` as is or create a unique identifier beginning with `monitoring_role_name` as the specified prefix"
 }
 
 variable "monitoring_role_description" {
@@ -321,12 +280,6 @@ variable "backup_window" {
   type        = string
   default     = null
   description = "The daily time range (in UTC) during which automated backups are created if they are enabled. Example: '09:46-10:16'. Must not overlap with maintenance_window"
-}
-
-variable "option_group_name" {
-  type        = string
-  default     = null
-  description = "Name of the DB option group to associate."
 }
 
 variable "timezone" {
@@ -424,36 +377,6 @@ variable "cloudwatch_log_group_retention_in_days" {
   description = "The number of days to retain CloudWatch logs for the DB instance"
 }
 
-variable "cloudwatch_log_group_kms_key_id" {
-  type        = string
-  default     = null
-  description = "The ARN of the KMS Key to use when encrypting log data"
-}
-
-variable "pre_signed_url" {
-  type        = string
-  default     = null
-  description = "A URL that contains a Signature Version 4 signed request for the StartDBInstanceAutomatedBackupsReplication action to be called in the AWS Region of the source DB instance"
-}
-
-variable "retention_period" {
-  type        = number
-  default     = 0
-  description = "The retention period for the replicated automated backups"
-}
-
-variable "source_db_instance_arn" {
-  type        = string
-  default     = ""
-  description = "The ARN of the source DB instance for the replicated automated backups"
-}
-
-variable "use_name_prefix" {
-  type        = bool
-  default     = false
-  description = "Determines whether to use `name` as is or create a unique name beginning with `name` as the specified prefix"
-}
-
 variable "option_group_description" {
   type        = string
   default     = null
@@ -482,12 +405,6 @@ variable "timeouts" {
   type        = map(string)
   default     = {}
   description = "Define maximum timeout for deletion of `aws_db_option_group` resource"
-}
-
-variable "description" {
-  type        = string
-  default     = null
-  description = "The description of the DB parameter group"
 }
 
 variable "family" {
@@ -605,12 +522,6 @@ variable "is_external" {
   description = "enable to udated existing security Group"
 }
 
-variable "existing_sg_id" {
-  type        = string
-  default     = null
-  description = "Provide existing security group id for updating existing rule"
-}
-
 variable "egress_rule" {
   type        = bool
   default     = true
@@ -709,12 +620,6 @@ variable "alias" {
   description = "The display name of the alias. The name must start with the word `alias` followed by a forward slash."
 }
 
-variable "auth_token" {
-  type        = string
-  default     = null
-  description = "The password used to access a password protected server. Can be specified only if transit_encryption_enabled = true."
-}
-
 variable "ssm_parameter_description" {
   type        = string
   default     = "Description of the parameter."
@@ -731,10 +636,4 @@ variable "ssm_parameter_endpoint_enabled" {
   type        = bool
   default     = false
   description = "Name of the parameter."
-}
-
-variable "automatic_failover_enabled" {
-  type        = bool
-  default     = true
-  description = "Specifies whether a read-only replica will be automatically promoted to read/write primary if the existing primary fails. If true, Multi-AZ is enabled for this replication group. If false, Multi-AZ is disabled for this replication group. Must be enabled for Redis (cluster mode enabled) replication groups. Defaults to false."
 }
