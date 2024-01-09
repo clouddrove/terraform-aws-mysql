@@ -8,5 +8,5 @@ jobs:
     secrets:
       GITHUB: ${{ secrets.GITHUB }}
     with:
-      tfcheck: 'tf-checks-replica-mysql-example / Get min/max versions'
+      tfcheck: 'tf-checks-complete-mssql-example / Check code format'
 ...
