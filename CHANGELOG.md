@@ -5,6 +5,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
+## [1.3.2] - 2024-11-13
+### :sparkles: New Features
+- [`66ed27e`](https://github.com/clouddrove/terraform-aws-mysql/commit/66ed27ed5417d418d506b23c82d0723531a36c95) - add deepsource & added assignees,reviewer in dependabot *(commit by [@Tanveer143s](https://github.com/Tanveer143s))*
+- [`5ac8709`](https://github.com/clouddrove/terraform-aws-mysql/commit/5ac8709129f8647b12b8bce426ea3c04a0b8c856) - Added new vpc tag *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`b27d238`](https://github.com/clouddrove/terraform-aws-mysql/commit/b27d2383e07509c43566b872f2f3b0f0b9ebef4e) - Added new vpc tag *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`6d22a56`](https://github.com/clouddrove/terraform-aws-mysql/commit/6d22a565b178c7e64ce695f0162b4b5e77ba62b2) - Added new vpc tag *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`c8133d0`](https://github.com/clouddrove/terraform-aws-mysql/commit/c8133d0e6531ffdfab2fd6626b645a5bb2808533) - updated github-action version aaded rendom version *(PR [#49](https://github.com/clouddrove/terraform-aws-mysql/pull/49) by [@theprashantyadav](https://github.com/theprashantyadav))*
+- [`712fbf2`](https://github.com/clouddrove/terraform-aws-mysql/commit/712fbf2ae8920bc86811ab022fd97dab0c1d850e) - Add automerge github shared workflow *(PR [#60](https://github.com/clouddrove/terraform-aws-mysql/pull/60) by [@vaibhav7797](https://github.com/vaibhav7797))*
+- [`2f3314e`](https://github.com/clouddrove/terraform-aws-mysql/commit/2f3314e1ff065c7347a3aa5abbaffe3117254a16) - update tf.checks step name *(PR [#67](https://github.com/clouddrove/terraform-aws-mysql/pull/67) by [@theprashantyadav](https://github.com/theprashantyadav))*
+
+### :bug: Bug Fixes
+- [`fbfd146`](https://github.com/clouddrove/terraform-aws-mysql/commit/fbfd146a3a477d9c243e9f19382871e3315ae497) - update workflow latest version and change _example name *(commit by [@theprashantyadav](https://github.com/theprashantyadav))*
+
+
 ## [1.3.1] - 2023-04-05
 ### :bug: Bug Fixes
 - [`98abd28`](https://github.com/clouddrove/terraform-aws-mysql/commit/98abd288f5c51c8764af9811d0179d662bad195a) - from clouddrove/bug/6ix-81
@@ -68,3 +82,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.0.4]: https://github.com/clouddrove/terraform-aws-mysql/compare/1.0.4...master
 [1.3.0]: https://github.com/clouddrove/terraform-aws-mysql/compare/1.3.0...master
 [1.3.1]: https://github.com/clouddrove/terraform-aws-mysql/compare/1.3.`...master
+[1.3.2]: https://github.com/clouddrove/terraform-aws-mysql/compare/1.3.1...1.3.2
