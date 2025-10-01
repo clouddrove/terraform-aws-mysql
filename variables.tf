@@ -6,6 +6,18 @@ variable "name" {
   description = "Name  (e.g. `app` or `cluster`)."
 }
 
+variable "repository" {
+  type        = string
+  default     = "https://github.com/clouddrove/terraform-aws-ec2"
+  description = "Terraform current module repo"
+
+  validation {
+    # regex(...) fails if it cannot find a match
+    condition     = can(regex("^https://", var.repository))
+    error_message = "The module-repo value must be a valid Git repo link."
+  }
+}
+
 variable "environment" {
   type        = string
   default     = ""
@@ -41,6 +53,13 @@ variable "identifier" {
   default     = ""
   description = "The name of the RDS instance"
 }
+
+variable "enabled_custom_password" {
+  description = "Whether to use a custom password (true) or generate a random one (false)."
+  type        = bool
+  default     = false
+}
+
 
 variable "custom_iam_instance_profile" {
   type        = string
@@ -377,6 +396,12 @@ variable "cloudwatch_log_group_retention_in_days" {
   description = "The number of days to retain CloudWatch logs for the DB instance"
 }
 
+variable "enabled_option_group" {
+  description = "Determines whether a cluster option group should be created or use existing"
+  type        = bool
+  default     = true
+}
+
 variable "option_group_description" {
   type        = string
   default     = null
@@ -401,6 +426,13 @@ variable "options" {
   description = "A list of Options to apply"
 }
 
+variable "option_group_name" {
+  description = "Existing DB option group name to use (if not creating a new one)."
+  type        = string
+  default     = null
+}
+
+
 variable "timeouts" {
   type        = map(string)
   default     = {}
@@ -417,6 +449,18 @@ variable "parameters" {
   description = "A list of DB parameter maps to apply"
   type        = list(map(string))
   default     = []
+}
+
+variable "parameter_group_name" {
+  description = "Existing DB parameter group name to use (if not creating a new one)."
+  type        = string
+  default     = null
+}
+
+variable "enabled_parameter_group" {
+  description = "Determines whether a cluster parameter should be created or use existing"
+  type        = bool
+  default     = true 
 }
 
 variable "subnet_ids" {
@@ -441,12 +485,6 @@ variable "enabled_read_replica" {
   type        = bool
   default     = true
   description = "A list of enabled read replica"
-}
-
-variable "enabled_replica" {
-  type        = bool
-  default     = false
-  description = "A list of enabled replica"
 }
 
 variable "db_subnet_group_tags" {

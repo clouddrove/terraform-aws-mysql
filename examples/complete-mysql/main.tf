@@ -1,8 +1,15 @@
+locals {
+  name          = "mysql"
+  environment   = "test"
+  region        = "us-east-1"
+  label_order   = ["name", "environment"]
+} 
+
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "ap-south-1"
+  region = local.region
 }
 
 ####----------------------------------------------------------------------------------
@@ -12,9 +19,9 @@ module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
   cidr_block  = "10.0.0.0/16"
 }
 
@@ -22,14 +29,14 @@ module "vpc" {
 ## A subnet is a range of IP addresses in your VPC.
 ####----------------------------------------------------------------------------------
 module "subnets" {
-  source  = "clouddrove/subnet/aws"
+  source = "clouddrove/subnet/aws"
   version = "2.0.1"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
-  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  availability_zones = ["${local.region}a", "${local.region}b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public"
   igw_id             = module.vpc.igw_id
@@ -43,13 +50,13 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name        = "mysql"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = local.name
+  environment = local.environment
+  label_order = local.label_order
 
   engine            = "mysql"
-  engine_version    = "8.0.28"
-  instance_class    = "db.t2.small"
+  engine_version    = "8.0.43"
+  instance_class    = "db.t3.small"
   allocated_storage = 5
 
   ####----------------------------------------------------------------------------------
@@ -74,6 +81,9 @@ module "mysql" {
 
   enabled_cloudwatch_logs_exports = ["audit", "general"]
 
+  # disable creation of Read Replica
+  enabled_read_replica = true
+
   # DB subnet group
   subnet_ids          = module.subnets.public_subnet_id
   publicly_accessible = true
@@ -85,7 +95,7 @@ module "mysql" {
   major_engine_version = "8.0"
 
   # Database Deletion Protection
-  deletion_protection = true
+  deletion_protection = false
 
   parameters = [
     {
