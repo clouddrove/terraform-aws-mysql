@@ -20,8 +20,8 @@ locals {
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 module "labels" {
-  source      = "clouddrove/labels/aws"
-  version     = "1.3.0"
+  source  = "clouddrove/labels/aws"
+  version = "1.3.0"
 
   name        = var.name
   repository  = var.repository
@@ -85,7 +85,7 @@ resource "aws_db_parameter_group" "this" {
 ### Provides an RDS DB option group resource.
 ####----------------------------------------------------------------------------------
 resource "aws_db_option_group" "this" {
-  count = var.enabled && var.enabled_option_group ? 1:0
+  count = var.enabled && var.enabled_option_group ? 1 : 0
 
   name                     = module.labels.id
   option_group_description = format("Option group for %s", module.labels.id)

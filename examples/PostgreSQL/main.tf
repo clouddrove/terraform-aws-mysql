@@ -1,9 +1,9 @@
 locals {
-  name          = "pgsql-new"
-  environment   = "test"
-  region        = "us-east-1"
-  label_order   = ["name", "environment"]
-} 
+  name        = "pgsql-new"
+  environment = "test"
+  region      = "us-east-1"
+  label_order = ["name", "environment"]
+}
 
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
@@ -30,7 +30,7 @@ module "vpc" {
 ## A subnet is a range of IP addresses in your VPC.
 ####----------------------------------------------------------------------------------
 module "private_subnets" {
-  source ="clouddrove/subnet/aws"
+  source  = "clouddrove/subnet/aws"
   version = "2.0.1"
 
   name        = "${local.name}-subnets"
