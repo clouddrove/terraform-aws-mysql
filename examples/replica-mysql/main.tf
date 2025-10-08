@@ -45,7 +45,6 @@ module "mysql" {
   snapshot_identifier    = ""
   kms_key_id             = ""
   enabled_read_replica   = true
-  enabled_replica        = true
 
   # DB Details
   db_name  = "replica"
