@@ -1,8 +1,15 @@
+locals {
+  name        = "pgsql-new"
+  environment = "test"
+  region      = "us-east-1"
+  label_order = ["name", "environment"]
+}
+
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "ap-south-1"
+  region = local.region
 }
 
 ####----------------------------------------------------------------------------------
@@ -12,9 +19,9 @@ module "vpc" {
   source  = "clouddrove/vpc/aws"
   version = "2.0.0"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
 
   cidr_block = "10.0.0.0/16"
 }
@@ -26,13 +33,13 @@ module "private_subnets" {
   source  = "clouddrove/subnet/aws"
   version = "2.0.1"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["name", "environment"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
   nat_gateway_enabled = true
 
-  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  availability_zones = ["${local.region}a", "${local.region}b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public-private"
   igw_id             = module.vpc.igw_id
@@ -46,17 +53,17 @@ module "private_subnets" {
 module "postgresql" {
   source = "../../"
 
-  name        = "postgresql"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = local.name
+  environment = local.environment
+  label_order = local.label_order
 
   engine            = "postgres"
-  engine_version    = "14.6"
+  engine_version    = "17.6"
   instance_class    = "db.t3.medium"
   allocated_storage = 50
   engine_name       = "postgres"
   storage_encrypted = true
-  family            = "postgres14"
+  family            = "postgres17"
   # DB Details
   db_name  = "test"
   username = "dbname"
@@ -75,19 +82,22 @@ module "postgresql" {
   allowed_ports = [5432]
 
   # disable backups to create DB faster
-  backup_retention_period = 0
+  backup_retention_period = 7
 
   enabled_cloudwatch_logs_exports = ["postgresql", "upgrade"]
+
+  # disable creation of Read Replica
+  enabled_read_replica = false
 
   # DB subnet group
   subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
 
   # DB option group
-  major_engine_version = "14"
+  major_engine_version = "17"
 
   # Database Deletion Protection
-  deletion_protection = true
+  deletion_protection = false
 
   ###ssm parameter
   ssm_parameter_endpoint_enabled = true

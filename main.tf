@@ -1,28 +1,11 @@
 ####----------------------------------------------------------------------------------
-## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+## Locals
 ####----------------------------------------------------------------------------------
-module "labels" {
-  source  = "clouddrove/labels/aws"
-  version = "1.3.0"
-
-  name        = var.name
-  environment = var.environment
-  managedby   = var.managedby
-  label_order = var.label_order
-}
-
-####----------------------------------------------------------------------------------
-## The resource random_id generates random numbers that are intended to be used as unique identifiers for other resources.
-####----------------------------------------------------------------------------------
-resource "random_id" "password" {
-  count       = var.enabled ? 1 : 0
-  byte_length = 20
-}
-
 locals {
-
-  identifier_prefix    = var.use_identifier_prefix ? "${var.identifier}-" : null
-  db_subnet_group_name = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
+  identifier_prefix       = var.use_identifier_prefix ? "${var.identifier}-" : null
+  db_subnet_group_name    = var.enabled_db_subnet_group ? join("", aws_db_subnet_group.this[*].id) : var.db_subnet_group_name
+  db_parameter_group_name = var.enabled_parameter_group ? join("", aws_db_parameter_group.this[*].id) : var.parameter_group_name
+  db_option_group_name    = var.enabled_option_group ? join("", aws_db_option_group.this[*].id) : var.option_group_name
 
   # Replicas will use source metadata
   username       = var.replicate_source_db != null ? null : var.username
@@ -33,14 +16,26 @@ locals {
   description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
-resource "random_id" "snapshot_identifier" {
-  count = var.enabled && !var.skip_final_snapshot ? 1 : 0
+####----------------------------------------------------------------------------------
+## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
+####----------------------------------------------------------------------------------
+module "labels" {
+  source  = "clouddrove/labels/aws"
+  version = "1.3.0"
 
-  keepers = {
-    id = var.identifier
-  }
+  name        = var.name
+  repository  = var.repository
+  environment = var.environment
+  managedby   = var.managedby
+  label_order = var.label_order
+}
 
-  byte_length = 4
+####----------------------------------------------------------------------------------
+## The resource random_id generates random numbers that are intended to be used as unique identifiers for other resources.
+####----------------------------------------------------------------------------------
+resource "random_id" "password" {
+  count       = var.enabled && var.enabled_custom_password == false ? 1 : 0
+  byte_length = 20
 }
 
 ####----------------------------------------------------------------------------------
@@ -49,7 +44,7 @@ resource "random_id" "snapshot_identifier" {
 resource "aws_db_subnet_group" "this" {
   count       = var.enabled && var.enabled_db_subnet_group ? 1 : 0
   name        = module.labels.id
-  description = local.description
+  description = format("Subnet Group for %s", module.labels.id)
   subnet_ids  = var.subnet_ids
   tags = merge(
     module.labels.tags,
@@ -61,10 +56,10 @@ resource "aws_db_subnet_group" "this" {
 ### Provides an RDS DB parameter group resource.
 ####----------------------------------------------------------------------------------
 resource "aws_db_parameter_group" "this" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.enabled_parameter_group ? 1 : 0
 
   name        = module.labels.id
-  description = local.description
+  description = format("Parameter Group for %s", module.labels.id)
   family      = var.family
   dynamic "parameter" {
     for_each = var.parameters
@@ -90,10 +85,10 @@ resource "aws_db_parameter_group" "this" {
 ### Provides an RDS DB option group resource.
 ####----------------------------------------------------------------------------------
 resource "aws_db_option_group" "this" {
-  count = var.enabled ? 1 : 0
+  count = var.enabled && var.enabled_option_group ? 1 : 0
 
   name                     = module.labels.id
-  option_group_description = local.description
+  option_group_description = format("Option group for %s", module.labels.id)
   engine_name              = var.engine_name
   major_engine_version     = var.major_engine_version
   dynamic "option" {
@@ -148,33 +143,15 @@ resource "aws_cloudwatch_log_group" "this" {
   )
 }
 
-##-----------------------------------------------------------------------------------
-### Generates an IAM policy document in JSON format for use with resources that expect policy documents such as aws_iam_policy.
-##-----------------------------------------------------------------------------------
-
-data "aws_iam_policy_document" "enhanced_monitoring" {
-  statement {
-    actions = [
-      "sts:AssumeRole",
-    ]
-
-    principals {
-      type        = "Service"
-      identifiers = ["monitoring.rds.amazonaws.com"]
-    }
-  }
-}
-
 ####----------------------------------------------------------------------------------
-### IAM - Manage Roles
 ### AWS Identity and Access Management (IAM) roles are entities you create and assign specific permissions to that allow trusted identities such as workforce identities and applications to perform actions in AWS
 ####----------------------------------------------------------------------------------
 resource "aws_iam_role" "enhanced_monitoring" {
-  count = var.enabled_monitoring_role ? 1 : 0
+  count = var.enabled && var.enabled_monitoring_role ? 1 : 0
 
   name                 = module.labels.id
-  assume_role_policy   = data.aws_iam_policy_document.enhanced_monitoring.json
-  description          = var.monitoring_role_description
+  assume_role_policy   = data.aws_iam_policy_document.enhanced_monitoring[count.index].json
+  description          = format("RDS Monitoring role for %s", module.labels.id)
   permissions_boundary = var.monitoring_role_permissions_boundary
 
   tags = merge(
@@ -187,21 +164,39 @@ resource "aws_iam_role" "enhanced_monitoring" {
 }
 
 resource "aws_iam_role_policy_attachment" "enhanced_monitoring" {
-  count = var.enabled_monitoring_role ? 1 : 0
+  count = var.enabled && var.enabled_monitoring_role ? 1 : 0
 
   role       = aws_iam_role.enhanced_monitoring[0].name
   policy_arn = "arn:${data.aws_partition.current.partition}:iam::aws:policy/service-role/AmazonRDSEnhancedMonitoringRole"
+}
+
+##-----------------------------------------------------------------------------------
+### Generates an IAM policy document in JSON format for use with resources that expect policy documents such as aws_iam_policy.
+##-----------------------------------------------------------------------------------
+
+data "aws_iam_policy_document" "enhanced_monitoring" {
+  count = var.enabled && var.enabled_monitoring_role ? 1 : 0
+  statement {
+    actions = [
+      "sts:AssumeRole",
+    ]
+
+    principals {
+      type        = "Service"
+      identifiers = ["monitoring.rds.amazonaws.com"]
+    }
+  }
 }
 
 ##----------------------------------------------------------------------------------
 ## Below resources will create SECURITY-GROUP and its components.
 ##----------------------------------------------------------------------------------
 resource "aws_security_group" "default" {
-  count = var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
+  count = var.enabled && var.enable_security_group && length(var.sg_ids) < 1 ? 1 : 0
 
   name        = format("%s-sg", module.labels.id)
   vpc_id      = var.vpc_id
-  description = var.sg_description
+  description = format("Security Group for %s", module.labels.id)
   tags        = module.labels.tags
   lifecycle {
     create_before_destroy = true
@@ -213,7 +208,7 @@ resource "aws_security_group" "default" {
 ##----------------------------------------------------------------------------------
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress" {
-  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
+  count = var.enabled && (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false && var.egress_rule == true) ? 1 : 0
 
   description       = var.sg_egress_description
   type              = "egress"
@@ -225,7 +220,7 @@ resource "aws_security_group_rule" "egress" {
 }
 #tfsec:ignore:aws-ec2-no-public-egress-sgr
 resource "aws_security_group_rule" "egress_ipv6" {
-  count = (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
+  count = var.enabled && (var.enable_security_group == true && length(var.sg_ids) < 1 && var.is_external == false) && var.egress_rule == true ? 1 : 0
 
   description       = var.sg_egress_ipv6_description
   type              = "egress"
@@ -237,7 +232,7 @@ resource "aws_security_group_rule" "egress_ipv6" {
 }
 
 resource "aws_security_group_rule" "ingress" {
-  count = length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
+  count = var.enabled && length(var.allowed_ip) > 0 == true && length(var.sg_ids) < 1 ? length(compact(var.allowed_ports)) : 0
 
   description       = var.sg_ingress_description
   type              = "ingress"
@@ -252,9 +247,9 @@ resource "aws_security_group_rule" "ingress" {
 ## Below resources will create KMS-KEY and its components.
 ##----------------------------------------------------------------------------------
 resource "aws_kms_key" "default" {
-  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
+  count = var.enabled && var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
-  description              = var.kms_description
+  description              = format("KMS Key for %s", module.labels.id)
   key_usage                = var.key_usage
   deletion_window_in_days  = var.deletion_window_in_days
   is_enabled               = var.is_enabled
@@ -266,7 +261,7 @@ resource "aws_kms_key" "default" {
 }
 
 resource "aws_kms_alias" "default" {
-  count = var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
+  count = var.enabled && var.kms_key_enabled && var.kms_key_id == "" ? 1 : 0
 
   name          = coalesce(var.alias, format("alias/%v", module.labels.id))
   target_key_id = var.kms_key_id == "" ? join("", aws_kms_key.default[*].id) : var.kms_key_id
@@ -302,7 +297,7 @@ data "aws_iam_policy_document" "default" {
 ####----------------------------------------------------------------------------------
 #tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "this" {
-  count = var.enabled && var.enabled_read_replica ? 1 : 0
+  count = var.enabled ? 1 : 0
 
   identifier        = module.labels.id
   identifier_prefix = local.identifier_prefix
@@ -391,7 +386,7 @@ resource "aws_db_instance" "this" {
     for_each = var.s3_import != null ? [var.s3_import] : []
 
     content {
-      source_engine         = "mysql"
+      source_engine         = local.engine
       source_engine_version = s3_import.value.source_engine_version
       bucket_name           = s3_import.value.bucket_name
       bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
@@ -419,14 +414,14 @@ resource "aws_db_instance" "this" {
 ####----------------------------------------------------------------------------------
 #tfsec:ignore:aws-rds-enable-performance-insights
 resource "aws_db_instance" "read" {
-  count = var.enabled && var.enabled_read_replica && var.enabled_replica ? 1 : 0
+  count = var.enabled && var.enabled_read_replica ? 1 : 0
 
   identifier        = format("%s-replica", module.labels.id)
   identifier_prefix = local.identifier_prefix
 
   engine            = null
   engine_version    = null
-  instance_class    = var.replica_instance_class
+  instance_class    = var.instance_class
   allocated_storage = var.allocated_storage
   storage_type      = var.storage_type
   storage_encrypted = var.storage_encrypted
@@ -509,7 +504,7 @@ resource "aws_db_instance" "read" {
     for_each = var.s3_import != null ? [var.s3_import] : []
 
     content {
-      source_engine         = "mysql"
+      source_engine         = local.engine
       source_engine_version = s3_import.value.source_engine_version
       bucket_name           = s3_import.value.bucket_name
       bucket_prefix         = lookup(s3_import.value, "bucket_prefix", null)
