@@ -1,33 +1,50 @@
 ---
 name: tf-checks
+permissions:
+  id-token: write
 on:
-  push:
-    branches: [ master ]
   pull_request:
-  workflow_dispatch:
 jobs:
   tf-checks-MariaDb-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/MariaDb/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-PostgreSQL:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/PostgreSQL/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-mssql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/complete-mssql/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-mysql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/complete-mysql/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-oracle_db-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/oracle_db/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-replica-mysql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/replica-mysql/'
+      provider: aws
+    secrets:
+      BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
 ...
