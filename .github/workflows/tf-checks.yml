@@ -10,24 +10,30 @@ jobs:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/MariaDb/'
+      provider: none
   tf-checks-PostgreSQL:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/PostgreSQL/'
+      provider: none
   tf-checks-complete-mssql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/complete-mssql/'
+      provider: none
   tf-checks-complete-mysql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/complete-mysql/'
+      provider: none
   tf-checks-oracle_db-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/oracle_db/'
+      provider: none
   tf-checks-replica-mysql-example:
     uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
     with:
       working_directory: './examples/replica-mysql/'
+      provider: none
 ...
