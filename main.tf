@@ -538,4 +538,5 @@ resource "aws_ssm_parameter" "secret-endpoint" {
   type        = var.ssm_parameter_type
   value       = join("", aws_db_instance.this[*].endpoint)
   key_id      = var.kms_key_id == "" ? join("", aws_kms_key.default[*].arn) : var.kms_key_id
+  tags        = module.labels.tags
 }
