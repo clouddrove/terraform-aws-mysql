@@ -48,6 +48,7 @@ jobs:
       working_directory: './examples/oracle_db/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-replica-mysql-example:
@@ -57,6 +58,7 @@ jobs:
       working_directory: './examples/replica-mysql/'
       provider: aws
       enable_plan: true
+      show_plan: false
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
 ...
