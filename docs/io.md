@@ -39,10 +39,12 @@
 | enabled | Whether to create this resource or not? | `bool` | `true` | no |
 | enabled\_cloudwatch\_log\_group | Determines whether a CloudWatch log group is created for each `enabled_cloudwatch_logs_exports` | `bool` | `false` | no |
 | enabled\_cloudwatch\_logs\_exports | List of log types to enable for exporting to CloudWatch logs. If omitted, no logs will be exported. Valid values (depending on engine): alert, audit, error, general, listener, slowquery, trace, postgresql (PostgreSQL), upgrade (PostgreSQL). | `list(string)` | `[]` | no |
+| enabled\_custom\_password | Whether to use a custom password (true) or generate a random one (false). | `bool` | `false` | no |
 | enabled\_db\_subnet\_group | A list of enabled db subnet group | `bool` | `true` | no |
 | enabled\_monitoring\_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | `bool` | `false` | no |
+| enabled\_option\_group | Determines whether a cluster option group should be created or use existing | `bool` | `true` | no |
+| enabled\_parameter\_group | Determines whether a cluster parameter should be created or use existing | `bool` | `true` | no |
 | enabled\_read\_replica | A list of enabled read replica | `bool` | `true` | no |
-| enabled\_replica | A list of enabled replica | `bool` | `false` | no |
 | engine | The database engine to use | `string` | `"mysql"` | no |
 | engine\_name | Specifies the name of the engine that this option group should be associated with | `string` | `"mysql"` | no |
 | engine\_version | The engine version to use | `string` | `null` | no |
@@ -74,7 +76,9 @@
 | name | Name  (e.g. `app` or `cluster`). | `string` | `""` | no |
 | network\_type | The type of network stack | `string` | `null` | no |
 | option\_group\_description | The description of the option group | `string` | `null` | no |
+| option\_group\_name | Existing DB option group name to use (if not creating a new one). | `string` | `null` | no |
 | options | A list of Options to apply | `any` | `[]` | no |
+| parameter\_group\_name | Existing DB parameter group name to use (if not creating a new one). | `string` | `null` | no |
 | parameters | A list of DB parameter maps to apply | `list(map(string))` | `[]` | no |
 | password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | `string` | `null` | no |
 | performance\_insights\_enabled | Specifies whether Performance Insights are enabled | `bool` | `false` | no |
@@ -86,6 +90,7 @@
 | replica\_instance\_class | The instance type of the RDS instance | `string` | `""` | no |
 | replica\_mode | Specifies whether the replica is in either mounted or open-read-only mode. This attribute is only supported by Oracle instances. Oracle replicas operate in open-read-only mode unless otherwise specified | `string` | `null` | no |
 | replicate\_source\_db | Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate. | `string` | `null` | no |
+| repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-ec2"` | no |
 | restore\_to\_point\_in\_time | Restore to a point in time (MySQL is NOT supported) | `map(string)` | `null` | no |
 | s3\_import | Restore from a Percona Xtrabackup in S3 (only MySQL is supported) | `map(string)` | `null` | no |
 | sg\_description | The security group description. | `string` | `"Instance default security group (only egress access is allowed)."` | no |
