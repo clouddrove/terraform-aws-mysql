@@ -65,7 +65,7 @@
 | license\_model | License model information for this DB instance. Optional, but required for some DB engines, i.e. Oracle SE1 | `string` | `null` | no |
 | maintenance\_window | The window to perform maintenance in. Syntax: 'ddd:hh24:mi-ddd:hh24:mi'. Eg: 'Mon:00:00-Mon:03:00' | `string` | `null` | no |
 | major\_engine\_version | Specifies the major version of the engine that this option group should be associated with | `string` | `null` | no |
-| managedby | ManagedBy, eg 'pps'. | `string` | `"ctr.anmol.nagpal@prth.com"` | no |
+| managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"AnmolNagpal"` | no |
 | max\_allocated\_storage | Specifies the value for Storage Autoscaling | `number` | `0` | no |
 | monitoring\_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | `number` | `0` | no |
 | monitoring\_role\_description | Description of the monitoring IAM role | `string` | `null` | no |
