@@ -165,7 +165,7 @@ variable "username" {
 
 variable "password" {
   type        = string
-  default     = null
+  default     = ""
   description = "Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file"
 }
 
@@ -233,12 +233,6 @@ variable "monitoring_role_name" {
   type        = string
   default     = "rds-monitoring-role"
   description = "Name of the IAM role which will be created when create_monitoring_role is enabled."
-}
-
-variable "monitoring_role_description" {
-  type        = string
-  default     = null
-  description = "Description of the monitoring IAM role"
 }
 
 variable "monitoring_role_permissions_boundary" {
@@ -469,12 +463,6 @@ variable "enabled_db_subnet_group" {
   description = "A list of enabled db subnet group"
 }
 
-variable "replica_instance_class" {
-  type        = string
-  default     = ""
-  description = "The instance type of the RDS instance"
-}
-
 variable "enabled_read_replica" {
   type        = bool
   default     = true
@@ -542,12 +530,6 @@ variable "vpc_id" {
   sensitive   = true
 }
 
-variable "sg_description" {
-  type        = string
-  default     = "Instance default security group (only egress access is allowed)."
-  description = "The security group description."
-}
-
 variable "is_external" {
   type        = bool
   default     = false
@@ -600,12 +582,6 @@ variable "kms_key_enabled" {
   type        = bool
   default     = true
   description = "Specifies whether the kms is enabled or disabled."
-}
-
-variable "kms_description" {
-  type        = string
-  default     = "Parameter Store KMS master key"
-  description = "The description of the key as viewed in AWS console."
 }
 
 variable "key_usage" {
