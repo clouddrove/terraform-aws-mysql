@@ -32,19 +32,18 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name                   = "rds"
-  environment            = "test"
-  label_order            = ["environment", "name"]
-  enabled                = true
-  engine                 = "mysql"
-  engine_version         = "8.0"
-  instance_class         = "db.t4g.large"
-  replica_instance_class = "db.t4g.large"
-  allocated_storage      = 20
-  identifier             = ""
-  snapshot_identifier    = ""
-  kms_key_id             = ""
-  enabled_read_replica   = true
+  name                 = "rds"
+  environment          = "test"
+  label_order          = ["environment", "name"]
+  enabled              = true
+  engine               = "mysql"
+  engine_version       = "8.0"
+  instance_class       = "db.t4g.large"
+  allocated_storage    = 20
+  identifier           = ""
+  snapshot_identifier  = ""
+  kms_key_id           = ""
+  enabled_read_replica = true
 
   # DB Details
   db_name  = "replica"
