@@ -57,7 +57,6 @@
 | is\_enabled | Specifies whether the key is enabled. | `bool` | `true` | no |
 | is\_external | enable to udated existing security Group | `bool` | `false` | no |
 | key\_usage | Specifies the intended use of the key. Defaults to ENCRYPT\_DECRYPT, and only symmetric encryption and decryption are supported. | `string` | `"ENCRYPT_DECRYPT"` | no |
-| kms\_description | The description of the key as viewed in AWS console. | `string` | `"Parameter Store KMS master key"` | no |
 | kms\_key\_enabled | Specifies whether the kms is enabled or disabled. | `bool` | `true` | no |
 | kms\_key\_id | The ARN for the KMS encryption key. If creating an encrypted replica, set this to the destination KMS ARN. If storage\_encrypted is set to true and kms\_key\_id is not specified the default KMS key created in your account will be used | `string` | `""` | no |
 | kms\_multi\_region | Indicates whether the KMS key is a multi-Region (true) or regional (false) key. | `bool` | `false` | no |
@@ -68,7 +67,6 @@
 | managedby | ManagedBy, eg 'CloudDrove' or 'AnmolNagpal'. | `string` | `"AnmolNagpal"` | no |
 | max\_allocated\_storage | Specifies the value for Storage Autoscaling | `number` | `0` | no |
 | monitoring\_interval | The interval, in seconds, between points when Enhanced Monitoring metrics are collected for the DB instance. To disable collecting Enhanced Monitoring metrics, specify 0. The default is 0. Valid Values: 0, 1, 5, 10, 15, 30, 60. | `number` | `0` | no |
-| monitoring\_role\_description | Description of the monitoring IAM role | `string` | `null` | no |
 | monitoring\_role\_name | Name of the IAM role which will be created when create\_monitoring\_role is enabled. | `string` | `"rds-monitoring-role"` | no |
 | monitoring\_role\_permissions\_boundary | ARN of the policy that is used to set the permissions boundary for the monitoring IAM role | `string` | `null` | no |
 | multi\_az | Specifies if the RDS instance is multi-AZ | `bool` | `false` | no |
@@ -80,20 +78,18 @@
 | options | A list of Options to apply | `any` | `[]` | no |
 | parameter\_group\_name | Existing DB parameter group name to use (if not creating a new one). | `string` | `null` | no |
 | parameters | A list of DB parameter maps to apply | `list(map(string))` | `[]` | no |
-| password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | `string` | `null` | no |
+| password | Password for the master DB user. Note that this may show up in logs, and it will be stored in the state file | `string` | `""` | no |
 | performance\_insights\_enabled | Specifies whether Performance Insights are enabled | `bool` | `false` | no |
 | performance\_insights\_kms\_key\_id | The ARN for the KMS key to encrypt Performance Insights data. | `string` | `null` | no |
 | performance\_insights\_retention\_period | The amount of time in days to retain Performance Insights data. Either 7 (7 days) or 731 (2 years). | `number` | `7` | no |
 | port | The port on which the DB accepts connections | `string` | `null` | no |
 | protocol | The protocol. If not icmp, tcp, udp, or all use the. | `string` | `"tcp"` | no |
 | publicly\_accessible | Bool to control if instance is publicly accessible | `bool` | `false` | no |
-| replica\_instance\_class | The instance type of the RDS instance | `string` | `""` | no |
 | replica\_mode | Specifies whether the replica is in either mounted or open-read-only mode. This attribute is only supported by Oracle instances. Oracle replicas operate in open-read-only mode unless otherwise specified | `string` | `null` | no |
 | replicate\_source\_db | Specifies that this resource is a Replicate database, and to use this value as the source database. This correlates to the identifier of another Amazon RDS Database to replicate. | `string` | `null` | no |
 | repository | Terraform current module repo | `string` | `"https://github.com/clouddrove/terraform-aws-ec2"` | no |
 | restore\_to\_point\_in\_time | Restore to a point in time (MySQL is NOT supported) | `map(string)` | `null` | no |
 | s3\_import | Restore from a Percona Xtrabackup in S3 (only MySQL is supported) | `map(string)` | `null` | no |
-| sg\_description | The security group description. | `string` | `"Instance default security group (only egress access is allowed)."` | no |
 | sg\_egress\_description | Description of the egress and ingress rule | `string` | `"Description of the rule."` | no |
 | sg\_egress\_ipv6\_description | Description of the egress\_ipv6 rule | `string` | `"Description of the rule."` | no |
 | sg\_ids | of the security group id. | `list(any)` | `[]` | no |
