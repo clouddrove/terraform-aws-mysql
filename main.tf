@@ -13,7 +13,6 @@ locals {
   engine         = var.replicate_source_db != null ? null : var.engine
   engine_version = var.replicate_source_db != null ? null : var.engine_version
   //  name_prefix = var.use_name_prefix ? "${var.name}-" : null
-  description = coalesce(var.option_group_description, format("%s option group", var.name))
 }
 
 ####----------------------------------------------------------------------------------
@@ -323,7 +322,7 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = local.db_subnet_group_name
   parameter_group_name   = join("", aws_db_parameter_group.this[*].name)
-  option_group_name      = join("", aws_db_option_group.this[*].name)
+  option_group_name      = local.db_option_group_name
   network_type           = var.network_type
 
   availability_zone   = var.availability_zone

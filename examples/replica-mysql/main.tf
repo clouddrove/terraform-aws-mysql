@@ -75,6 +75,7 @@ module "mysql" {
   family = "mysql8.0"
 
   # DB option group
+  enabled_option_group       = true
   major_engine_version       = "8.0"
   auto_minor_version_upgrade = false
   # Snapshot name upon DB deletion

@@ -387,7 +387,7 @@ variable "cloudwatch_log_group_retention_in_days" {
 variable "enabled_option_group" {
   description = "Determines whether a cluster option group should be created or use existing"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "option_group_description" {

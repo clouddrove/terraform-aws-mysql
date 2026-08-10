@@ -86,6 +86,7 @@ module "sqlserver" {
   family = "sqlserver-se-15.0"
 
   # DB option group
+  enabled_option_group = true
   major_engine_version = "15.00"
 
   ###ssm parameter

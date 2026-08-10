@@ -83,6 +83,7 @@ module "oracle" {
   subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
   # DB option group
+  enabled_option_group = true
   major_engine_version = "19"
 
   # Database Deletion Protection
