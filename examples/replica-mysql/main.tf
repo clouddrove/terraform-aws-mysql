@@ -72,7 +72,8 @@ module "mysql" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "mysql8.0"
+  enabled_parameter_group = true
+  family                  = "mysql8.0"
 
   # DB option group
   enabled_option_group       = true

@@ -1,6 +1,6 @@
 locals {
   name        = "mysql"
-  environment = "test"
+  environment = "test-mor"
   region      = "us-east-1"
   label_order = ["name", "environment"]
 }
@@ -92,7 +92,8 @@ module "mysql" {
   deletion_protection = false
 
   # DB parameter group
-  family = "mysql8.4"
+  enabled_parameter_group = true
+  family                  = "mysql8.4"
 
   parameters = [
     {
@@ -106,7 +107,7 @@ module "mysql" {
   ]
 
   # DB option group
-  enabled_option_group = true
+  enabled_option_group = false
   major_engine_version = "8.4"
 
   options = [

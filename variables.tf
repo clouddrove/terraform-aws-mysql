@@ -448,7 +448,7 @@ variable "parameter_group_name" {
 variable "enabled_parameter_group" {
   description = "Determines whether a cluster parameter should be created or use existing"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "subnet_ids" {
