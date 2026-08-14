@@ -1,6 +1,6 @@
 locals {
   name        = "mysql"
-  environment = "test-mor"
+  environment = "test"
   region      = "us-east-1"
   label_order = ["name", "environment"]
 }
@@ -82,7 +82,7 @@ module "mysql" {
   enabled_cloudwatch_logs_exports = ["audit", "general"]
 
   # disable creation of Read Replica
-  enabled_read_replica = false
+  enabled_read_replica = true
 
   # DB subnet group
   subnet_ids          = module.subnets.public_subnet_id
@@ -107,7 +107,7 @@ module "mysql" {
   ]
 
   # DB option group
-  enabled_option_group = false
+  enabled_option_group = true
   major_engine_version = "8.4"
 
   options = [
