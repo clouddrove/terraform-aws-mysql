@@ -42,8 +42,8 @@
 | enabled\_custom\_password | Whether to use a custom password (true) or generate a random one (false). | `bool` | `false` | no |
 | enabled\_db\_subnet\_group | A list of enabled db subnet group | `bool` | `true` | no |
 | enabled\_monitoring\_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | `bool` | `false` | no |
-| enabled\_option\_group | Determines whether a cluster option group should be created or use existing | `bool` | `true` | no |
-| enabled\_parameter\_group | Determines whether a cluster parameter should be created or use existing | `bool` | `true` | no |
+| enabled\_option\_group | Determines whether a cluster option group should be created or use existing | `bool` | `false` | no |
+| enabled\_parameter\_group | Determines whether a cluster parameter should be created or use existing | `bool` | `false` | no |
 | enabled\_read\_replica | A list of enabled read replica | `bool` | `true` | no |
 | engine | The database engine to use | `string` | `"mysql"` | no |
 | engine\_name | Specifies the name of the engine that this option group should be associated with | `string` | `"mysql"` | no |

@@ -17,7 +17,7 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
   name        = "${local.name}-vpc"
   environment = local.environment
@@ -30,7 +30,7 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
   name        = "${local.name}-subnets"
   environment = local.environment
@@ -55,7 +55,7 @@ module "mysql" {
   label_order = local.label_order
 
   engine            = "mysql"
-  engine_version    = "8.0.43"
+  engine_version    = "8.4.9"
   instance_class    = "db.t3.small"
   allocated_storage = 5
 
@@ -69,7 +69,7 @@ module "mysql" {
   # DB Details
   db_name  = "test"
   username = "user"
-  password = "esfsgcGdfawAhdxtfjm!"
+  password = "" # -- Get password from terraform.tfstate under module.moduleName > instances > attributes > b64_url
   port     = "3306"
 
   maintenance_window = "Mon:00:00-Mon:03:00"
@@ -88,14 +88,12 @@ module "mysql" {
   subnet_ids          = module.subnets.public_subnet_id
   publicly_accessible = true
 
-  # DB parameter group
-  family = "mysql8.0"
-
-  # DB option group
-  major_engine_version = "8.0"
-
   # Database Deletion Protection
   deletion_protection = false
+
+  # DB parameter group
+  enabled_parameter_group = true
+  family                  = "mysql8.4"
 
   parameters = [
     {
@@ -107,6 +105,10 @@ module "mysql" {
       value = "utf8"
     }
   ]
+
+  # DB option group
+  enabled_option_group = true
+  major_engine_version = "8.4"
 
   options = [
     {

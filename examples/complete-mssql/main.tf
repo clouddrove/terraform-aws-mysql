@@ -83,9 +83,11 @@ module "sqlserver" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "sqlserver-se-15.0"
+  enabled_parameter_group = true
+  family                  = "sqlserver-se-15.0"
 
   # DB option group
+  enabled_option_group = true
   major_engine_version = "15.00"
 
   ###ssm parameter

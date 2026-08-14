@@ -94,6 +94,7 @@ module "postgresql" {
   publicly_accessible = true
 
   # DB option group
+  enabled_option_group = true
   major_engine_version = "17"
 
   # Database Deletion Protection

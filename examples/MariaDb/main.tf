@@ -82,6 +82,7 @@ module "mariadb" {
   publicly_accessible = true
 
   # DB option group
+  enabled_option_group = true
   major_engine_version = "10.6"
 
   # Database Deletion Protection

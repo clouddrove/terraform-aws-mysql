@@ -72,9 +72,11 @@ module "mysql" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "mysql8.0"
+  enabled_parameter_group = true
+  family                  = "mysql8.0"
 
   # DB option group
+  enabled_option_group       = true
   major_engine_version       = "8.0"
   auto_minor_version_upgrade = false
   # Snapshot name upon DB deletion
