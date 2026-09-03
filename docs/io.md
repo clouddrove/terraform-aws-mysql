@@ -136,4 +136,6 @@
 | db\_subnet\_group\_name | The db subnet group name |
 | enhanced\_monitoring\_iam\_role\_arn | The Amazon Resource Name (ARN) specifying the monitoring role |
 | enhanced\_monitoring\_iam\_role\_name | The name of the monitoring role |
+| instance\_class | The RDS instance class. |
+| rds\_name | The RDS instance name extracted from the RDS instance ARN. |
 
