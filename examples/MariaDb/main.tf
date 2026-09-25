@@ -2,7 +2,7 @@
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "eu-west-1"
+  region = "ap-south-1"
 }
 
 ####----------------------------------------------------------------------------------
@@ -30,7 +30,7 @@ module "private_subnets" {
   environment = "test"
   label_order = ["environment", "name"]
 
-  availability_zones = ["eu-west-1a", "eu-west-1b"]
+  availability_zones = ["ap-south-1a", "ap-south-1b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public-private"
   igw_id             = module.vpc.igw_id
@@ -49,7 +49,7 @@ module "mariadb" {
   label_order = ["environment", "name"]
 
   engine            = "MariaDB"
-  engine_version    = "10.6.28"
+  engine_version    = "10.6.10"
   instance_class    = "db.m5.large"
   engine_name       = "MariaDB"
   allocated_storage = 50
@@ -73,7 +73,7 @@ module "mariadb" {
 
   family = "mariadb10.6"
   # disable backups to create DB faster
-  backup_retention_period = 1
+  backup_retention_period = 0
 
   enabled_cloudwatch_logs_exports = ["audit", "general"]
 
