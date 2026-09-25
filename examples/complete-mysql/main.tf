@@ -1,7 +1,7 @@
 locals {
   name        = "mysql"
   environment = "test"
-  region      = "us-east-1"
+  region      = "eu-west-1"
   label_order = ["name", "environment"]
 }
 
@@ -57,7 +57,7 @@ module "mysql" {
   engine            = "mysql"
   engine_version    = "8.4.9"
   instance_class    = "db.t3.small"
-  allocated_storage = 5
+  allocated_storage = 20
 
   ####----------------------------------------------------------------------------------
   ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.

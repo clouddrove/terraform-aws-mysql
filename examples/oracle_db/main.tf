@@ -49,6 +49,7 @@ module "oracle" {
   name        = "oracle"
   environment = "test"
   label_order = ["environment", "name"]
+  iam_database_authentication_enabled = false
 
   engine            = "oracle-ee"
   engine_version    = "19"
