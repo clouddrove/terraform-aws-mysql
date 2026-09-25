@@ -87,7 +87,7 @@ resource "aws_db_option_group" "this" {
   count = var.enabled && var.enabled_option_group ? 1 : 0
 
   name                     = module.labels.id
-  option_group_description = format("Option group for %s", module.labels.id)
+  option_group_description = var.option_group_description != null ? var.option_group_description : format("Option group for %s", module.labels.id)
   engine_name              = var.engine_name
   major_engine_version     = var.major_engine_version
   dynamic "option" {
@@ -321,7 +321,7 @@ resource "aws_db_instance" "this" {
 
   vpc_security_group_ids = length(var.sg_ids) < 1 ? aws_security_group.default[*].id : var.sg_ids
   db_subnet_group_name   = local.db_subnet_group_name
-  parameter_group_name   = join("", aws_db_parameter_group.this[*].name)
+  parameter_group_name   = local.db_parameter_group_name
   option_group_name      = local.db_option_group_name
   network_type           = var.network_type
 

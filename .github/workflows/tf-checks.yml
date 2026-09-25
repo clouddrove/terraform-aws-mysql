@@ -12,8 +12,8 @@ on:
       - '*.tf'
 jobs:
   tf-checks-MariaDb-example:
-    if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.fork != true
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    if: github.actor != 'dependabot[bot]'
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/MariaDb/'
       provider: aws
@@ -22,8 +22,8 @@ jobs:
     secrets:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-PostgreSQL:
-    if: github.actor != 'dependabot[bot]' && github.event.pull_request.head.repo.fork != true
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    if: github.actor != 'dependabot[bot]'
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/PostgreSQL/'
       provider: aws
@@ -33,7 +33,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-mssql-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/complete-mssql/'
       provider: aws
@@ -43,7 +43,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-complete-mysql-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/complete-mysql/'
       provider: aws
@@ -53,7 +53,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-oracle_db-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/oracle_db/'
       provider: aws
@@ -63,7 +63,7 @@ jobs:
       BUILD_ROLE: ${{ secrets.BUILD_ROLE }}
   tf-checks-replica-mysql-example:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@master
+    uses: clouddrove/github-shared-workflows/.github/workflows/tf-checks.yml@v2
     with:
       working_directory: './examples/replica-mysql/'
       provider: aws
