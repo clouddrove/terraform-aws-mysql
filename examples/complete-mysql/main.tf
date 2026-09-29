@@ -58,7 +58,7 @@ module "mysql" {
   engine_version    = "8.4.9"
   instance_class    = "db.t3.small"
   allocated_storage = 5
-
+  storage_type      = "gp3"
   ####----------------------------------------------------------------------------------
   ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
   ####----------------------------------------------------------------------------------

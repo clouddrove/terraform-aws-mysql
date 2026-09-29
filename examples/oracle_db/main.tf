@@ -57,6 +57,7 @@ module "oracle" {
   allocated_storage = 50
   storage_encrypted = true
   family            = "oracle-ee-19"
+  storage_type      = "gp3"
   # DB Details
   db_name  = "test"
   username = "admin"

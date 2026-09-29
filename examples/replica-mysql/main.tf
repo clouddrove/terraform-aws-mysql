@@ -44,7 +44,7 @@ module "mysql" {
   snapshot_identifier  = ""
   kms_key_id           = ""
   enabled_read_replica = true
-
+  storage_type         = "gp3"
   # DB Details
   db_name  = "replica"
   username = "replica_mysql"
