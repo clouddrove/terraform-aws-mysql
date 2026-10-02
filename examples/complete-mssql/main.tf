@@ -52,6 +52,7 @@ module "sqlserver" {
   instance_class    = "db.t3.large"
   engine_name       = "sqlserver-se"
   allocated_storage = 20
+  storage_type      = "gp2" # gp3 is not supported for SQL Server
   timezone          = "GMT Standard Time"
   license_model     = "license-included"
 

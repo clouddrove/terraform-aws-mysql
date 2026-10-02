@@ -64,6 +64,7 @@ module "postgresql" {
   engine_name       = "postgres"
   storage_encrypted = true
   family            = "postgres17"
+  storage_type      = "gp3"
   # DB Details
   db_name  = "test"
   username = "dbname"

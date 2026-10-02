@@ -53,6 +53,7 @@ module "mariadb" {
   instance_class    = "db.m5.large"
   engine_name       = "MariaDB"
   allocated_storage = 50
+  storage_type      = "gp3"
 
   # DB Details
   db_name  = "test"
