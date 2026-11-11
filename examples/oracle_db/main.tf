@@ -1,8 +1,15 @@
+locals {
+  name        = "clouddrove"
+  environment = "test"
+  region      = "ap-south-1"
+  label_order = ["name", "environment"]
+}
+
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "ap-south-1"
+  region = local.region
 }
 
 ####----------------------------------------------------------------------------------
@@ -10,11 +17,11 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
 
   cidr_block = "10.0.0.0/16"
 }
@@ -24,15 +31,15 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["name", "environment"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
   nat_gateway_enabled = true
 
-  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  availability_zones = ["${local.region}a", "${local.region}b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public-private"
   igw_id             = module.vpc.igw_id
@@ -46,12 +53,12 @@ module "private_subnets" {
 module "oracle" {
   source = "../../"
 
-  name        = "oracle"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-oracle"
+  environment = local.environment
+  label_order = local.label_order
 
   engine            = "oracle-ee"
-  engine_version    = "19"
+  engine_version    = "26"
   instance_class    = "db.t3.medium"
   engine_name       = "oracle-ee"
   allocated_storage = 50
@@ -83,7 +90,7 @@ module "oracle" {
   subnet_ids          = module.private_subnets.public_subnet_id
   publicly_accessible = true
   # DB option group
-  major_engine_version = "19"
+  major_engine_version = "26"
 
   # Database Deletion Protection
   deletion_protection = true

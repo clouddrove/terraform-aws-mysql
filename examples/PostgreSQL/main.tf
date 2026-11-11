@@ -1,5 +1,5 @@
 locals {
-  name        = "pgsql-new"
+  name        = "clouddrove"
   environment = "test"
   region      = "us-east-1"
   label_order = ["name", "environment"]
@@ -17,7 +17,7 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
   name        = "${local.name}-vpc"
   environment = local.environment
@@ -31,7 +31,7 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
   name        = "${local.name}-subnets"
   environment = local.environment
@@ -58,7 +58,7 @@ module "postgresql" {
   label_order = local.label_order
 
   engine            = "postgres"
-  engine_version    = "17.6"
+  engine_version    = "18.6"
   instance_class    = "db.t3.medium"
   allocated_storage = 50
   engine_name       = "postgres"
@@ -94,7 +94,7 @@ module "postgresql" {
   publicly_accessible = true
 
   # DB option group
-  major_engine_version = "17"
+  major_engine_version = "18"
 
   # Database Deletion Protection
   deletion_protection = false

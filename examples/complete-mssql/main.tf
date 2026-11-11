@@ -1,8 +1,15 @@
+locals {
+  name        = "clouddrove"
+  environment = "test"
+  region      = "ap-south-1"
+  label_order = ["name", "environment"]
+}
+
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "ap-south-1"
+  region = local.region
 }
 
 ####----------------------------------------------------------------------------------
@@ -10,11 +17,11 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
   cidr_block  = "10.0.0.0/16"
 }
 
@@ -23,13 +30,13 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
-  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  availability_zones = ["${local.region}a", "${local.region}b"]
   vpc_id             = module.vpc.vpc_id
   type               = "private"
   igw_id             = module.vpc.igw_id
@@ -43,12 +50,12 @@ module "subnets" {
 module "sqlserver" {
   source = "../../"
 
-  name        = "sqlserver"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-sqlserver"
+  environment = local.environment
+  label_order = local.label_order
 
   engine            = "sqlserver-se"
-  engine_version    = "15.00"
+  engine_version    = "17.00"
   instance_class    = "db.t3.large"
   engine_name       = "sqlserver-se"
   allocated_storage = 20
@@ -83,10 +90,10 @@ module "sqlserver" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "sqlserver-se-15.0"
+  family = "sqlserver-se-17.0"
 
   # DB option group
-  major_engine_version = "15.00"
+  major_engine_version = "17.00"
 
   ###ssm parameter
   ssm_parameter_endpoint_enabled = true

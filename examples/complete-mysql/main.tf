@@ -1,5 +1,5 @@
 locals {
-  name        = "mysql"
+  name        = "clouddrove"
   environment = "test"
   region      = "us-east-1"
   label_order = ["name", "environment"]
@@ -17,7 +17,7 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
   name        = "${local.name}-vpc"
   environment = local.environment
@@ -30,7 +30,7 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
   name        = "${local.name}-subnets"
   environment = local.environment
@@ -50,12 +50,12 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name        = local.name
+  name        = "${local.name}-mysql"
   environment = local.environment
   label_order = local.label_order
 
   engine            = "mysql"
-  engine_version    = "8.0.43"
+  engine_version    = "8.4.11"
   instance_class    = "db.t3.small"
   allocated_storage = 5
 
@@ -92,7 +92,7 @@ module "mysql" {
   family = "mysql8.0"
 
   # DB option group
-  major_engine_version = "8.0"
+  major_engine_version = "8.4"
 
   # Database Deletion Protection
   deletion_protection = false

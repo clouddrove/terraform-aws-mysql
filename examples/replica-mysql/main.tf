@@ -1,27 +1,34 @@
+locals {
+  name        = "clouddrove"
+  environment = "test"
+  region      = "eu-west-1"
+  label_order = ["name", "environment"]
+}
+
 provider "aws" {
-  region = "eu-west-1"
+  region = local.region
 }
 
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
 
   cidr_block = "10.0.0.0/16"
 }
 
 module "subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
-  availability_zones = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  availability_zones = ["${local.region}a", "${local.region}b", "${local.region}c"]
   vpc_id             = module.vpc.vpc_id
   type               = "public"
   igw_id             = module.vpc.igw_id
@@ -32,12 +39,12 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name                 = "rds"
-  environment          = "test"
-  label_order          = ["environment", "name"]
+  name                 = "${local.name}-rds"
+  environment          = local.environment
+  label_order          = local.label_order
   enabled              = true
   engine               = "mysql"
-  engine_version       = "8.0"
+  engine_version       = "8.4"
   instance_class       = "db.t4g.large"
   allocated_storage    = 20
   identifier           = ""
@@ -75,7 +82,7 @@ module "mysql" {
   family = "mysql8.0"
 
   # DB option group
-  major_engine_version       = "8.0"
+  major_engine_version       = "8.4"
   auto_minor_version_upgrade = false
   # Snapshot name upon DB deletion
 
