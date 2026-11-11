@@ -42,6 +42,12 @@ variable "enabled" {
   description = "Whether to create this resource or not?"
 }
 
+variable "tags" {
+  type        = map(string)
+  default     = {}
+  description = "A map of tags to assign to the resource"
+}
+
 variable "identifier" {
   type        = string
   default     = ""

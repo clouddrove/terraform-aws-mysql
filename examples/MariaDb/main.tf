@@ -1,8 +1,15 @@
+locals {
+  name        = "clouddrove"
+  environment = "test"
+  region      = "ap-south-1"
+  label_order = ["name", "environment"]
+}
+
 ####----------------------------------------------------------------------------------
 ## Provider block added, Use the Amazon Web Services (AWS) provider to interact with the many resources supported by AWS.
 ####----------------------------------------------------------------------------------
 provider "aws" {
-  region = "ap-south-1"
+  region = local.region
 }
 
 ####----------------------------------------------------------------------------------
@@ -10,11 +17,11 @@ provider "aws" {
 ####----------------------------------------------------------------------------------
 module "vpc" {
   source  = "clouddrove/vpc/aws"
-  version = "2.0.0"
+  version = "2.0.5"
 
-  name        = "vpc"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-vpc"
+  environment = local.environment
+  label_order = local.label_order
 
   cidr_block = "10.0.0.0/16"
 }
@@ -24,13 +31,13 @@ module "vpc" {
 ####----------------------------------------------------------------------------------
 module "private_subnets" {
   source  = "clouddrove/subnet/aws"
-  version = "2.0.1"
+  version = "2.0.3"
 
-  name        = "subnets"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-subnets"
+  environment = local.environment
+  label_order = local.label_order
 
-  availability_zones = ["ap-south-1a", "ap-south-1b"]
+  availability_zones = ["${local.region}a", "${local.region}b"]
   vpc_id             = module.vpc.vpc_id
   type               = "public-private"
   igw_id             = module.vpc.igw_id
@@ -44,9 +51,9 @@ module "private_subnets" {
 module "mariadb" {
   source = "../../"
 
-  name        = "mariadb"
-  environment = "test"
-  label_order = ["environment", "name"]
+  name        = "${local.name}-mariadb"
+  environment = local.environment
+  label_order = local.label_order
 
   engine            = "MariaDB"
   engine_version    = "10.6.10"
@@ -72,7 +79,7 @@ module "mariadb" {
   allowed_ip    = [module.vpc.vpc_cidr_block]
   allowed_ports = [3306]
 
-  family = "mariadb10.6"
+  family = "mariadb12.3"
   # disable backups to create DB faster
   backup_retention_period = 0
 
@@ -83,8 +90,7 @@ module "mariadb" {
   publicly_accessible = true
 
   # DB option group
-  enabled_option_group = true
-  major_engine_version = "10.6"
+  major_engine_version = "12.3"
 
   # Database Deletion Protection
   deletion_protection = true

@@ -1,5 +1,5 @@
 locals {
-  name        = "mysql"
+  name        = "clouddrove"
   environment = "test"
   region      = "us-east-1"
   label_order = ["name", "environment"]
@@ -50,12 +50,12 @@ module "subnets" {
 module "mysql" {
   source = "../../"
 
-  name        = local.name
+  name        = "${local.name}-mysql"
   environment = local.environment
   label_order = local.label_order
 
   engine            = "mysql"
-  engine_version    = "8.4.9"
+  engine_version    = "8.4.11"
   instance_class    = "db.t3.small"
   allocated_storage = 5
   storage_type      = "gp3"
@@ -87,6 +87,12 @@ module "mysql" {
   # DB subnet group
   subnet_ids          = module.subnets.public_subnet_id
   publicly_accessible = true
+
+  # DB parameter group
+  family = "mysql8.0"
+
+  # DB option group
+  major_engine_version = "8.4"
 
   # Database Deletion Protection
   deletion_protection = false
