@@ -58,6 +58,12 @@ output "db_instance_name" {
   value       = try(aws_db_instance.this[0].db_name, "")
 }
 
+output "rds_name" {
+  description = "The RDS instance name extracted from the RDS instance ARN."
+  value       = var.enabled ? split(":", aws_db_instance.this[0].arn)[6] : null
+}
+
+
 output "db_instance_username" {
   description = "The master username for the database"
   value       = try(aws_db_instance.this[0].username, "")
@@ -88,6 +94,11 @@ output "db_instance_password" {
   description = "The master password"
   value       = try(aws_db_instance.this[0].password, "")
   sensitive   = true
+}
+
+output "instance_class" {
+  description = "The RDS instance class."
+  value       = try(aws_db_instance.this[0].instance_class, "")
 }
 
 ################################################################################

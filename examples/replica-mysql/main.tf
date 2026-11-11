@@ -51,7 +51,7 @@ module "mysql" {
   snapshot_identifier  = ""
   kms_key_id           = ""
   enabled_read_replica = true
-
+  storage_type         = "gp3"
   # DB Details
   db_name  = "replica"
   username = "replica_mysql"
@@ -79,7 +79,8 @@ module "mysql" {
   publicly_accessible = false
 
   # DB parameter group
-  family = "mysql8.0"
+  enabled_parameter_group = true
+  family                  = "mysql8.0"
 
   # DB option group
   major_engine_version       = "8.4"

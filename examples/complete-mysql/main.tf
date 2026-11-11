@@ -58,7 +58,7 @@ module "mysql" {
   engine_version    = "8.4.11"
   instance_class    = "db.t3.small"
   allocated_storage = 5
-
+  storage_type      = "gp3"
   ####----------------------------------------------------------------------------------
   ## Below A security group controls the traffic that is allowed to reach and leave the resources that it is associated with.
   ####----------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ module "mysql" {
   # DB Details
   db_name  = "test"
   username = "user"
-  password = "esfsgcGdfawAhdxtfjm!"
+  password = "" # -- Get password from terraform.tfstate under module.moduleName > instances > attributes > b64_url
   port     = "3306"
 
   maintenance_window = "Mon:00:00-Mon:03:00"
@@ -97,6 +97,10 @@ module "mysql" {
   # Database Deletion Protection
   deletion_protection = false
 
+  # DB parameter group
+  enabled_parameter_group = true
+  family                  = "mysql8.4"
+
   parameters = [
     {
       name  = "character_set_client"
@@ -107,6 +111,10 @@ module "mysql" {
       value = "utf8"
     }
   ]
+
+  # DB option group
+  enabled_option_group = true
+  major_engine_version = "8.4"
 
   options = [
     {

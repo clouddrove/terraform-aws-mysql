@@ -42,8 +42,8 @@
 | enabled\_custom\_password | Whether to use a custom password (true) or generate a random one (false). | `bool` | `false` | no |
 | enabled\_db\_subnet\_group | A list of enabled db subnet group | `bool` | `true` | no |
 | enabled\_monitoring\_role | Create IAM role with a defined name that permits RDS to send enhanced monitoring metrics to CloudWatch Logs. | `bool` | `false` | no |
-| enabled\_option\_group | Determines whether a cluster option group should be created or use existing | `bool` | `true` | no |
-| enabled\_parameter\_group | Determines whether a cluster parameter should be created or use existing | `bool` | `true` | no |
+| enabled\_option\_group | Determines whether a cluster option group should be created or use existing | `bool` | `false` | no |
+| enabled\_parameter\_group | Determines whether a cluster parameter should be created or use existing | `bool` | `false` | no |
 | enabled\_read\_replica | A list of enabled read replica | `bool` | `true` | no |
 | engine | The database engine to use | `string` | `"mysql"` | no |
 | engine\_name | Specifies the name of the engine that this option group should be associated with | `string` | `"mysql"` | no |
@@ -101,7 +101,7 @@
 | ssm\_parameter\_type | Type of the parameter. | `string` | `"SecureString"` | no |
 | storage\_encrypted | Specifies whether the DB instance is encrypted | `bool` | `true` | no |
 | storage\_throughput | Storage throughput value for the DB instance. This setting applies only to the `gp3` storage type. See `notes` for limitations regarding this variable for `gp3` | `number` | `null` | no |
-| storage\_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp2' if not. If you specify 'io1' or 'gp3' , you must also include a value for the 'iops' parameter | `string` | `null` | no |
+| storage\_type | One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp3' if not. If you specify 'io1' or 'gp3' , you must also include a value for the 'iops' parameter | `string` | `"gp3"` | no |
 | subnet\_ids | A list of VPC Subnet IDs to launch in. | `list(string)` | `[]` | no |
 | timeouts | Define maximum timeout for deletion of `aws_db_option_group` resource | `map(string)` | `{}` | no |
 | timezone | Time zone of the DB instance. timezone is currently only supported by Microsoft SQL Server. The timezone can only be set on creation. See MSSQL User Guide for more information. | `string` | `null` | no |
@@ -136,4 +136,6 @@
 | db\_subnet\_group\_name | The db subnet group name |
 | enhanced\_monitoring\_iam\_role\_arn | The Amazon Resource Name (ARN) specifying the monitoring role |
 | enhanced\_monitoring\_iam\_role\_name | The name of the monitoring role |
+| instance\_class | The RDS instance class. |
+| rds\_name | The RDS instance name extracted from the RDS instance ARN. |
 

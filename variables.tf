@@ -80,9 +80,9 @@ variable "allocated_storage" {
 }
 
 variable "storage_type" {
-  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp2' if not. If you specify 'io1' or 'gp3' , you must also include a value for the 'iops' parameter"
+  description = "One of 'standard' (magnetic), 'gp2' (general purpose SSD), 'gp3' (new generation of general purpose SSD), or 'io1' (provisioned IOPS SSD). The default is 'io1' if iops is specified, 'gp3' if not. If you specify 'io1' or 'gp3' , you must also include a value for the 'iops' parameter"
   type        = string
-  default     = null
+  default     = "gp3"
 }
 
 variable "storage_throughput" {
@@ -393,7 +393,7 @@ variable "cloudwatch_log_group_retention_in_days" {
 variable "enabled_option_group" {
   description = "Determines whether a cluster option group should be created or use existing"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "option_group_description" {
@@ -454,7 +454,7 @@ variable "parameter_group_name" {
 variable "enabled_parameter_group" {
   description = "Determines whether a cluster parameter should be created or use existing"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "subnet_ids" {
